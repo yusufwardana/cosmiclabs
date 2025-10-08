@@ -232,9 +232,18 @@ export default function App() {
                 case 'Outdoor Ceria': themeInstruction = 'Foto diambil di luar ruangan seperti taman atau kebun yang cerah. Suasananya ceria dan penuh warna.'; break;
                 case 'Urban Street': themeInstruction = 'Ini adalah foto gaya jalanan yang keren, diambil di lingkungan perkotaan modern, misalnya di depan dinding bertekstur atau di jalanan kota.'; break;
             }
-            let baseInstruction = (uploadType === 'design') 
-                ? `Model sedang mengenakan ${productType}. Desain grafis dari gambar pertama ditempatkan secara realistis di bagian ${designSize === 'small' ? 'dada kiri sebagai logo kecil' : designSize === 'medium' ? 'tengah dada' : 'penuh menutupi bagian depan'}.`
-                : `Model sedang mengenakan ${productType} yang sama persis seperti yang terlihat pada gambar produk yang diunggah.`;
+            let baseInstruction = '';
+            if (uploadType === 'design') {
+                let sizeInstruction = '';
+                switch(designSize) {
+                    case 'full': sizeInstruction = `seluruh bagian depan ${productType} ditutupi oleh desain grafis dari gambar pertama.`; break;
+                    case 'medium': sizeInstruction = `desain grafis dari gambar pertama ditempatkan secara jelas di bagian tengah dada ${productType}.`; break;
+                    case 'small': sizeInstruction = `versi kecil dari desain grafis gambar pertama ditempatkan di dada kiri ${productType}, seperti logo saku.`; break;
+                }
+                baseInstruction = `Model sedang mengenakan ${productType} di mana ${sizeInstruction} Desain harus terlihat jelas dan diterapkan secara realistis.`;
+            } else {
+                baseInstruction = `Model sedang mengenakan ${productType} yang sama persis seperti yang terlihat pada gambar produk yang diunggah.`;
+            }
             
             const prompts = [
                 `Foto medium shot. ${baseInstruction} ${faceInstruction} ${themeInstruction} Model tersenyum dan melihat ke arah kamera.`,
@@ -257,7 +266,7 @@ export default function App() {
                 const candidate = result.candidates?.[0];
                 if (!candidate || !candidate.content?.parts) {
                     const safetyRating = candidate?.safetyRatings?.find(r => r.blocked)?.category;
-                    if (safetyRating) throw new Error(`Gambar diblokir oleh filter keamanan AI (Kategori: ${safetyRating}).`);
+                    if (safetyRating) throw new Error(`Gambar diblokir oleh filter keamanan AI (Kategori: ${safetyRating}). Coba gunakan gambar lain.`);
                     throw new Error("AI tidak mengembalikan hasil gambar. Coba lagi.");
                 }
                 const imagePart = candidate.content.parts.find(p => p.inlineData);
