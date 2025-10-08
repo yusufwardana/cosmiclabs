@@ -233,7 +233,292 @@ export default function App() {
         <div className="font-sans text-white bg-gray-900 min-h-screen">
             <ExternalScriptsLoader />
             <div className="container mx-auto max-w-4xl p-4 sm:p-8">
-                {/* Header and main content remain the same */}
+                <header className="text-center mb-10">
+                    <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                        TikTok Affiliate Auto Content
+                    </h1>
+                    <p className="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">
+                        Buat konten promosi afiliasi TikTok (foto produk, deskripsi, caption, dan skrip video) secara otomatis dengan AI.
+                    </p>
+                </header>
+
+                <main>
+                    {apiError && <ErrorMessage>{apiError}</ErrorMessage>}
+
+                    {/* Step 1: Input Produk */}
+                    {currentStep === 1 && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle icon="📦">Langkah 1: Informasi Produk</CardTitle>
+                                <p className="text-gray-400 mt-2">Masukkan detail produk yang ingin Anda promosikan.</p>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div>
+                                    <Label htmlFor="productName">Nama Produk</Label>
+                                    <Input id="productName" type="text" placeholder="Contoh: T-Shirt Oversize Katun Bambu" value={productName} onChange={(e) => updateState({ productName: e.target.value, apiError: null })} />
+                                </div>
+                                <div>
+                                    <Label htmlFor="productType">Jenis Produk</Label>
+                                    <Select id="productType" value={productType} onChange={(e) => updateState({ productType: e.target.value })}>
+                                        <option>Kaos</option>
+                                        <option>Kemeja</option>
+                                        <option>Jaket</option>
+                                        <option>Celana</option>
+                                        <option>Sepatu</option>
+                                        <option>Aksesoris</option>
+                                    </Select>
+                                </div>
+                                <div>
+                                    <Label>Foto Produk (Background Polos)</Label>
+                                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-600 px-6 py-10 bg-gray-800/50">
+                                        <div className="text-center">
+                                            {productImageUrl ? (
+                                                <img src={productImageUrl} alt="Preview Produk" className="mx-auto h-40 w-40 object-cover rounded-lg" />
+                                            ) : (
+                                                <UploadCloudIcon className="mx-auto h-12 w-12 text-gray-500" />
+                                            )}
+                                            <div className="mt-4 flex text-sm leading-6 text-gray-400">
+                                                <label htmlFor="product-image-upload" className="relative cursor-pointer rounded-md font-semibold text-blue-400 hover:text-blue-500">
+                                                    <span>Upload file</span>
+                                                    <input id="product-image-upload" name="product-image-upload" type="file" className="sr-only" accept="image/*" onChange={(e) => handleFileChange(e, 'product')} />
+                                                </label>
+                                                <p className="pl-1">atau drag and drop</p>
+                                            </div>
+                                            <p className="text-xs leading-5 text-gray-500">PNG, JPG, GIF maksimal 10MB</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <Checkbox id="use-reference-face" label="Gunakan Wajah Referensi (Opsional)" checked={useReferenceFace} onChange={(e) => updateState({ useReferenceFace: e.target.checked, referenceFaceImage: null, referenceFaceImageUrl: '' })} />
+                                    {useReferenceFace && (
+                                        <div className="mt-4 pl-7">
+                                            <Label>Foto Wajah Referensi</Label>
+                                              <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-600 px-6 py-10 bg-gray-800/50">
+                                                <div className="text-center">
+                                                     {referenceFaceImageUrl ? (
+                                                        <img src={referenceFaceImageUrl} alt="Preview Wajah" className="mx-auto h-40 w-40 object-cover rounded-lg" />
+                                                    ) : (
+                                                        <UploadCloudIcon className="mx-auto h-12 w-12 text-gray-500" />
+                                                    )}
+                                                    <div className="mt-4 flex text-sm leading-6 text-gray-400">
+                                                        <label htmlFor="face-image-upload" className="relative cursor-pointer rounded-md font-semibold text-blue-400 hover:text-blue-500">
+                                                            <span>Upload file</span>
+                                                            <input id="face-image-upload" name="face-image-upload" type="file" className="sr-only" accept="image/*" onChange={(e) => handleFileChange(e, 'face')} />
+                                                        </label>
+                                                    </div>
+                                                    <p className="text-xs leading-5 text-gray-500">Pastikan wajah terlihat jelas</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="pt-4">
+                                    <Button onClick={() => updateState({ currentStep: 2 })} disabled={!productName || !productImage}>
+                                        Lanjut ke Langkah 2
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    {/* Step 2: Generate Images */}
+                    {currentStep === 2 && (
+                         <Card>
+                            <CardHeader>
+                                <CardTitle icon="🎨">Langkah 2: Buat Foto Produk</CardTitle>
+                                <p className="text-gray-400 mt-2">Pilih tema foto dan biarkan AI membuat foto produk yang menarik.</p>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-6">
+                                    <div>
+                                        <Label>Pilih Tema Foto</Label>
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                            {photoThemes.map(theme => (
+                                                <button key={theme.name} onClick={() => updateState({ selectedTheme: theme.name })} className={`p-4 rounded-lg border-2 text-center transition-all duration-200 ${selectedTheme === theme.name ? 'border-blue-500 bg-blue-900/50 ring-2 ring-blue-500' : 'border-gray-600 bg-gray-700/50 hover:bg-gray-700'}`}>
+                                                    <span className="text-3xl block mb-2">{theme.emoji}</span>
+                                                    <span className="font-semibold">{theme.name}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                                        <Button onClick={() => updateState({ currentStep: 1, generatedImages: [] })} className="bg-gray-600 hover:bg-gray-500">
+                                            Kembali
+                                        </Button>
+                                        <Button onClick={handleGenerateImages} disabled={isGenerateButtonDisabled}>
+                                            {isGeneratingImages && <LoaderCircleIcon className="animate-spin h-5 w-5 mr-2" />}
+                                            {isGeneratingImages ? 'Membuat Foto...' : 'Buat Foto Sekarang!'}
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                {generatedImages.length > 0 && (
+                                    <div className="mt-8">
+                                        <h3 className="text-lg font-semibold text-gray-200 mb-4">Hasil Foto:</h3>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            {generatedImages.map((image, index) => (
+                                                <div key={index} className="relative group">
+                                                    <img src={image.url} alt={`Generated Image ${index + 1}`} className="rounded-lg object-cover w-full h-full" />
+                                                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <a href={image.url} download={`product_image_${index + 1}.png`} className="text-white p-2 rounded-full bg-blue-600 hover:bg-blue-500">
+                                                            <DownloadIcon className="h-6 w-6" />
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="mt-6 text-center">
+                                            <Button onClick={() => updateState({ currentStep: 3 })}>
+                                                Lanjut ke Langkah 3
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    )}
+
+                     {/* Step 3: Generate Text & Voice */}
+                    {currentStep === 3 && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle icon="✍️">Langkah 3: Buat Teks & Suara</CardTitle>
+                                <p className="text-gray-400 mt-2">Buat deskripsi produk, caption TikTok, dan skrip video dengan suara AI.</p>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {/* Kolom Kiri: Generate Text */}
+                                    <div className="space-y-6">
+                                        <div>
+                                            <Label htmlFor="productDescription">Deskripsi Singkat Produk (Opsional)</Label>
+                                            <Textarea id="productDescription" rows="4" placeholder="Contoh: Kaos bahan katun bambu, adem, anti-bakteri, cocok untuk iklim tropis." value={productDescription} onChange={(e) => updateState({ productDescription: e.target.value })} />
+                                        </div>
+                                        <Button onClick={handleGenerateText} disabled={isGeneratingText}>
+                                            {isGeneratingText && <LoaderCircleIcon className="animate-spin h-5 w-5 mr-2" />}
+                                            {isGeneratingText ? 'Membuat Teks...' : 'Buat Teks (Deskripsi & Caption)'}
+                                        </Button>
+                                         {generatedText && (
+                                            <div className="space-y-4 mt-6 p-4 bg-gray-900 rounded-lg">
+                                                <div>
+                                                    <Label className="flex justify-between items-center">
+                                                        <span>Hook/Judul</span>
+                                                        <button onClick={() => handleCopyText(generatedText.hook, 'hook')} className="text-xs text-gray-400 hover:text-white flex items-center gap-1">
+                                                            {copiedText === 'hook' ? <CheckIcon className="h-4 w-4 text-green-500"/> : <CopyIcon className="h-4 w-4"/>} Salin
+                                                        </button>
+                                                    </Label>
+                                                    <p className="text-sm p-3 bg-gray-800 rounded-md">{generatedText.hook}</p>
+                                                </div>
+                                                <div>
+                                                    <Label className="flex justify-between items-center">
+                                                        <span>Caption TikTok</span>
+                                                        <button onClick={() => handleCopyText(generatedText.caption, 'caption')} className="text-xs text-gray-400 hover:text-white flex items-center gap-1">
+                                                            {copiedText === 'caption' ? <CheckIcon className="h-4 w-4 text-green-500"/> : <CopyIcon className="h-4 w-4"/>} Salin
+                                                        </button>
+                                                    </Label>
+                                                    <p className="text-sm p-3 bg-gray-800 rounded-md whitespace-pre-wrap">{generatedText.caption}</p>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Kolom Kanan: Generate Voice Script */}
+                                    <div className="space-y-6">
+                                        <div>
+                                            <Label htmlFor="sourceText">Teks untuk Video (Sumber Suara)</Label>
+                                            <Textarea id="sourceText" rows="4" placeholder="Masukkan teks yang ingin diubah menjadi suara di sini. Bisa dari deskripsi produk atau caption." value={sourceText} onChange={(e) => updateState({ sourceText: e.target.value })} />
+                                        </div>
+                                         <div>
+                                            <Label htmlFor="voiceStyle">Gaya Suara</Label>
+                                            <Select id="voiceStyle" value={voiceStyle} onChange={(e) => updateState({ voiceStyle: e.target.value })}>
+                                                <option>Wanita Natural 🇮🇩</option>
+                                                <option>Pria Formal 🇮🇩</option>
+                                                <option>Wanita Ceria 🇮🇩</option>
+                                            </Select>
+                                        </div>
+                                        <Button onClick={handleGenerateScripts} disabled={isGeneratingScripts || !sourceText}>
+                                            {isGeneratingScripts && <LoaderCircleIcon className="animate-spin h-5 w-5 mr-2" />}
+                                            {isGeneratingScripts ? 'Membuat Skrip & Suara...' : 'Buat Skrip Video & Suara AI'}
+                                        </Button>
+                                        {generatedScripts && (
+                                            <div className="space-y-4 mt-6 p-4 bg-gray-900 rounded-lg">
+                                                <div>
+                                                    <Label>Hasil Suara AI</Label>
+                                                    {generatedScripts.audioUrl && <audio controls src={generatedScripts.audioUrl} className="w-full"></audio>}
+                                                </div>
+                                                <div>
+                                                    <Label className="flex justify-between items-center">
+                                                        <span>Skrip Video (Prompt untuk Editing)</span>
+                                                        <button onClick={() => handleCopyText(generatedScripts.videoPrompt, 'prompt')} className="text-xs text-gray-400 hover:text-white flex items-center gap-1">
+                                                            {copiedText === 'prompt' ? <CheckIcon className="h-4 w-4 text-green-500"/> : <CopyIcon className="h-4 w-4"/>} Salin
+                                                        </button>
+                                                    </Label>
+                                                    <p className="text-sm p-3 bg-gray-800 rounded-md whitespace-pre-wrap">{generatedScripts.videoPrompt}</p>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="mt-8 flex flex-col sm:flex-row gap-4">
+                                    <Button onClick={() => updateState({ currentStep: 2 })} className="bg-gray-600 hover:bg-gray-500">
+                                        Kembali
+                                    </Button>
+                                    <Button onClick={() => updateState({ currentStep: 4 })} disabled={!generatedText || !generatedScripts}>
+                                        Lanjut ke Langkah 4
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    {/* Step 4: Download */}
+                    {currentStep === 4 && (
+                        <Card ref={finalOutputRef}>
+                            <CardHeader className="text-center">
+                                <CardTitle icon={<PackageCheckIcon className="h-8 w-8 text-green-400" />} className="justify-center text-3xl">
+                                    Konten Anda Siap!
+                                </CardTitle>
+                                <p className="text-gray-400 mt-2">Semua file yang Anda butuhkan telah digabungkan dalam satu file zip.</p>
+                            </CardHeader>
+                            <CardContent className="text-center">
+                                <div className="max-w-md mx-auto bg-gray-900/80 p-6 rounded-2xl">
+                                    <div className="grid grid-cols-2 gap-4 text-left">
+                                        <div className="font-semibold text-gray-300">Foto Produk AI:</div>
+                                        <div className="text-green-400">{generatedImages.length} file</div>
+
+                                        <div className="font-semibold text-gray-300">Teks Konten:</div>
+                                        <div className="text-green-400">1 file (Hook, Caption, dll)</div>
+
+                                        <div className="font-semibold text-gray-300">Skrip & Suara AI:</div>
+                                        <div className="text-green-400">2 file (Teks & .wav)</div>
+
+                                        <div className="col-span-2 my-2 border-t border-gray-700"></div>
+
+                                        <div className="font-semibold text-gray-300">Ukuran Total:</div>
+                                        <div>{zipSize || 'Menghitung...'}</div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-8 max-w-sm mx-auto">
+                                    <Button onClick={handleDownloadZip} disabled={isDownloading}>
+                                        {isDownloading ? <LoaderCircleIcon className="animate-spin h-5 w-5 mr-2" /> : <DownloadIcon className="h-5 w-5 mr-2" />}
+                                        {isDownloading ? 'Menyiapkan file...' : `Download Semua File (.zip)`}
+                                    </Button>
+                                </div>
+
+                                <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                                     <Button onClick={handleStartOver} className="bg-transparent border border-gray-600 hover:bg-gray-700 text-gray-300 w-auto px-6">
+                                        <RotateCcwIcon className="h-4 w-4 mr-2"/>
+                                        Mulai Lagi
+                                    </Button>
+                                    <Button onClick={() => updateState({ currentStep: 3 })} className="bg-gray-600 hover:bg-gray-500 w-auto px-6">
+                                        Kembali
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+                </main>
             </div>
         </div>
     );
