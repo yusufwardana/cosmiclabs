@@ -362,8 +362,7 @@ export default function App() {
             <div className="container mx-auto max-w-4xl p-4 sm:p-8">
                 <header className="text-center mb-10">
                    <div className="flex justify-center items-center mb-4 relative">
-                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
-                            TikTok Affiliate Auto Content
+                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Cosmiclab Studio
                         </h1>
                          <button onClick={handleStartOver} className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors bg-gray-800/50 hover:bg-gray-700/70 border border-gray-700 rounded-lg px-3 py-1.5">
                             <RotateCcwIcon className="h-4 w-4" />
