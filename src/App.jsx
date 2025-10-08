@@ -111,7 +111,6 @@ const photoThemes = [
 ];
 
 const initialState = {
-    currentStep: 1,
     apiError: null,
     productName: '',
     productType: 'Kaos',
@@ -134,25 +133,42 @@ const initialState = {
     zipSize: null,
 };
 
-// --- MAIN APP COMPONENT ---
-// ** PENTING UNTUK DEPLOYMENT **
-// Ganti "" dengan API Key Anda yang sebenarnya di Vercel.
-// Caranya ada di panduan di bawah.
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
 
 export default function App() {
     const [state, setState] = useState(initialState);
-    const { currentStep, apiError, productName, productType, productImage, productImageUrl, useReferenceFace, referenceFaceImage, referenceFaceImageUrl, selectedTheme, generatedImages, isGeneratingImages, productDescription, generatedText, isGeneratingText, sourceText, voiceStyle, generatedScripts, isGeneratingScripts, isDownloading, zipSize } = state;
+    const { apiError, productName, productType, productImage, productImageUrl, useReferenceFace, referenceFaceImage, referenceFaceImageUrl, selectedTheme, generatedImages, isGeneratingImages, productDescription, generatedText, isGeneratingText, sourceText, voiceStyle, generatedScripts, isGeneratingScripts, isDownloading, zipSize } = state;
     
     const [copiedText, setCopiedText] = useState(null);
-    const finalOutputRef = useRef(null);
+    const resultsRef = useRef(null);
+    const textRef = useRef(null);
+    const voiceRef = useRef(null);
+    const downloadRef = useRef(null);
 
     const updateState = (newState) => {
         setState(prevState => ({ ...prevState, ...newState }));
     };
 
     useEffect(() => {
-        if (currentStep === 4 && generatedImages.length > 0 && generatedText && generatedScripts) {
+        if (generatedImages.length > 0 && textRef.current) {
+            textRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, [generatedImages]);
+
+    useEffect(() => {
+        if (generatedText && voiceRef.current) {
+            voiceRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, [generatedText]);
+    
+    useEffect(() => {
+        if (generatedScripts && downloadRef.current) {
+            downloadRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, [generatedScripts]);
+
+    useEffect(() => {
+        if (generatedImages.length > 0 && generatedText && generatedScripts) {
             let totalBytes = 0;
             const textContent = `[Hook]\n${generatedText.hook}\n\n[Caption TikTok]\n${generatedText.caption}\n\n[Deskripsi Produk]\n${generatedText.description}\n\n[Call to Action]\n${generatedText.cta}`;
             totalBytes += new Blob([textContent]).size;
@@ -168,7 +184,7 @@ export default function App() {
             });
             updateState({ zipSize: formatBytes(totalBytes) });
         }
-    }, [currentStep, generatedImages, generatedText, generatedScripts]);
+    }, [generatedImages, generatedText, generatedScripts]);
 
     const toBase64 = file => new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -180,7 +196,7 @@ export default function App() {
     const handleFileChange = (e, type) => {
         const file = e.target.files[0];
         if (!file) return;
-        const newState = { generatedImages: [], apiError: null };
+        const newState = { apiError: null };
         if (type === 'product') {
             newState.productImage = file;
             newState.productImageUrl = URL.createObjectURL(file);
@@ -203,39 +219,265 @@ export default function App() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const callGeminiApi = async (url, payload, retries = 3, delay = 1000) => {
-        // ... (fungsi ini tetap sama)
+    const callGeminiApi = async (url, payload) => {
+        const fullUrl = `${url}?key=${apiKey}`;
+        const response = await fetch(fullUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+            const errorBody = await response.json();
+            console.error("API Error Body:", errorBody);
+            throw new Error(`API error: ${response.status} ${response.statusText} - ${errorBody.error?.message || 'Unknown error'}`);
+        }
+        return await response.json();
     };
     
-    const generateMockupPrompts = (theme, productType, withFace) => {
-        // ... (fungsi ini tetap sama)
-    };
-
     const handleGenerateImages = async () => {
-        // ... (fungsi ini tetap sama, tapi pastikan tidak ada `const apiKey = ""` di dalamnya)
+        if (!apiKey) {
+            updateState({ apiError: "API Key belum diatur. Silakan atur VITE_GEMINI_API_KEY di pengaturan Environment Variables Vercel." });
+            return;
+        }
+        updateState({ isGeneratingImages: true, apiError: null, generatedImages: [] });
+
+        try {
+            const baseInstruction = `The model is wearing a ${productType} featuring the graphic design from the first uploaded image. The design should be placed realistically on the center chest of the garment.`;
+            const faceInstruction = useReferenceFace ? `The model's face must closely resemble the person in the second uploaded reference image.` : `The model is a generic, stylish Indonesian person.`;
+            let themeInstruction = '';
+            switch (selectedTheme) {
+                case 'Studio Minimalis': themeInstruction = 'The photo is a professional shot in a studio with a clean, minimalist light-colored background and soft, even lighting.'; break;
+                case 'Cafe Estetik': themeInstruction = 'The photo is taken in a modern, stylish cafe with natural window light and warm, cozy tones.'; break;
+                case 'Outdoor Ceria': themeInstruction = 'The photo is taken outdoors in a bright, sunny park or garden. The mood is happy and cheerful.'; break;
+                case 'Urban Street': themeInstruction = 'This is a cool street style photograph taken in a modern urban setting, like against a concrete wall or on a city street.'; break;
+            }
+            const prompts = [
+                `Medium shot. ${baseInstruction} ${faceInstruction} ${themeInstruction} The model is smiling and looking at the camera. High-quality fashion photograph, 9:16 portrait aspect ratio.`,
+                `Full body shot. ${baseInstruction} ${faceInstruction} ${themeInstruction} The model is in a relaxed, natural pose. High-quality fashion photograph, 9:16 portrait aspect ratio.`,
+            ];
+
+            const productImageBase64 = await toBase64(productImage);
+            const faceImageBase64 = useReferenceFace ? await toBase64(referenceFaceImage) : null;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent`;
+            const imagePromises = prompts.map(prompt => {
+                const parts = [{ text: prompt }, { inlineData: { mimeType: productImage.type, data: productImageBase64 } }];
+                if (useReferenceFace && faceImageBase64) {
+                    parts.push({ inlineData: { mimeType: referenceFaceImage.type, data: faceImageBase64 } });
+                }
+                const payload = { generationConfig: { responseModalities: ['IMAGE'], imageConfig: { aspectRatio: "9:16" } }, contents: [{ parts }] };
+                return callGeminiApi(apiUrl, payload);
+            });
+            const imageResults = await Promise.all(imagePromises);
+            const imageUrls = imageResults.map(result => {
+                const candidate = result.candidates?.[0];
+                if (candidate && candidate.content?.parts?.find(p => p.inlineData)) {
+                    return `data:image/png;base64,${candidate.content.parts.find(p => p.inlineData).inlineData.data}`;
+                }
+                throw new Error("Gagal memproses respons gambar dari AI.");
+            });
+            updateState({ 
+                generatedImages: imageUrls.map(url => ({ url })),
+                productDescription: `Sebuah ${productType} "${productName}" dengan desain eksklusif, cocok untuk gaya ${selectedTheme}. Bahannya nyaman dan berkualitas tinggi.`
+            });
+        } catch (error) {
+            updateState({ apiError: `Gagal membuat gambar: ${error.message}` });
+        } finally {
+            updateState({ isGeneratingImages: false });
+        }
     };
     
-     const handleGenerateText = async () => {
-        // ... (fungsi ini tetap sama)
+    const handleGenerateText = async () => {
+        if (!apiKey) { updateState({ apiError: "API Key belum diatur." }); return; }
+        updateState({ isGeneratingText: true, apiError: null });
+        try {
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`;
+            const schema = { type: "OBJECT", properties: { hook: { type: "STRING" }, caption: { type: "STRING" }, cta: { type: "STRING" } }, required: ["hook", "caption", "cta"] };
+            const systemPrompt = `You are an expert social media marketer for TikTok affiliate content in Indonesia. Your tone is casual, persuasive, and uses trendy Indonesian slang. Generate content based on the user's product description. The output must be in JSON format.`;
+            const userPrompt = `Product description: "${productDescription || productName}". Generate a hook, a TikTok caption, and a strong call-to-action (CTA).`;
+            const payload = { contents: [{ parts: [{ text: userPrompt }] }], systemInstruction: { parts: [{ text: systemPrompt }] }, generationConfig: { responseMimeType: "application/json", responseSchema: schema } };
+            const result = await callGeminiApi(apiUrl, payload);
+            const data = JSON.parse(result.candidates[0].content.parts[0].text);
+            updateState({ generatedText: data, sourceText: data.caption || '' });
+        } catch (error) {
+            updateState({ apiError: `Gagal membuat teks: ${error.message}` });
+        } finally {
+            updateState({ isGeneratingText: false });
+        }
     };
 
     const handleGenerateScripts = async () => {
-        // ... (fungsi ini tetap sama)
+        if (!apiKey) { updateState({ apiError: "API Key belum diatur." }); return; }
+        updateState({ isGeneratingScripts: true, apiError: null });
+        try {
+            const textApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`;
+            const scriptSchema = { type: "OBJECT", properties: { voiceScript: { type: "STRING" }, videoPrompt: { type: "STRING" }}, required: ["voiceScript", "videoPrompt"] };
+            const scriptSystemPrompt = `You are a creative director for TikTok ads. Generate a short voice-over script and a detailed video prompt based on the ad copy and voice style. Output must be JSON.`;
+            const scriptUserPrompt = `Ad copy: "${sourceText}". Voice style: "${voiceStyle}".`;
+            const scriptPayload = { contents: [{ parts: [{ text: scriptUserPrompt }] }], systemInstruction: { parts: [{ text: scriptSystemPrompt }] }, generationConfig: { responseMimeType: "application/json", responseSchema: scriptSchema } };
+            const scriptResult = await callGeminiApi(textApiUrl, scriptPayload);
+            const scriptsData = JSON.parse(scriptResult.candidates[0].content.parts[0].text);
+            
+            const ttsApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent`;
+            const voiceMap = { 'Wanita Natural 🇮🇩': { voiceName: 'Kore', promptDesc: 'cheerful and natural Indonesian woman' }, 'Pria Formal 🇮🇩': { voiceName: 'Charon', promptDesc: 'formal and informative Indonesian man' }, 'Wanita Ceria 🇮🇩': { voiceName: 'Puck', promptDesc: 'energetic and excited Indonesian woman' } };
+            const selectedVoice = voiceMap[voiceStyle];
+            const ttsPayload = { contents: [{ parts: [{ text: `Say in the style of a ${selectedVoice.promptDesc}: ${scriptsData.voiceScript}` }] }], generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: selectedVoice.voiceName } } } }, model: "gemini-2.5-flash-preview-tts" };
+            const ttsResult = await callGeminiApi(ttsApiUrl, ttsPayload);
+            const audioPart = ttsResult.candidates[0].content.parts[0];
+            const sampleRate = parseInt(audioPart.inlineData.mimeType.match(/rate=(\d+)/)[1], 10);
+            const pcmBuffer = base64ToArrayBuffer(audioPart.inlineData.data);
+            const wavBlob = pcmToWav(pcmBuffer, sampleRate);
+            updateState({ generatedScripts: { ...scriptsData, audioUrl: URL.createObjectURL(wavBlob), audioWavBlob: wavBlob } });
+        } catch (error) {
+            updateState({ apiError: `Gagal membuat suara: ${error.message}` });
+        } finally {
+            updateState({ isGeneratingScripts: false });
+        }
     };
     
     const handleDownloadZip = async () => {
-        // ... (fungsi ini tetap sama)
+        if (typeof window.JSZip === 'undefined') { updateState({ apiError: "Pustaka download belum siap." }); return; }
+        updateState({ isDownloading: true, apiError: null });
+        try {
+            const zip = new window.JSZip();
+            generatedImages.forEach((img, i) => zip.file(`images/image_${i + 1}.png`, img.url.split(',')[1], { base64: true }));
+            const textContent = `[Hook]\n${generatedText.hook}\n\n[Caption TikTok]\n${generatedText.caption}\n\n[Deskripsi Produk]\n${productDescription}\n\n[Call to Action]\n${generatedText.cta}`;
+            zip.file('captions.txt', textContent);
+            zip.file('voice-script.txt', generatedScripts.voiceScript);
+            zip.file('video-prompt.txt', generatedScripts.videoPrompt);
+            zip.file('audio/voice_over.wav', generatedScripts.audioWavBlob);
+            const content = await zip.generateAsync({ type: "blob" });
+            window.saveAs(content, "tiktok-affiliate-content.zip");
+        } catch (error) {
+            updateState({ apiError: "Gagal membuat file ZIP." });
+        } finally {
+            updateState({ isDownloading: false });
+        }
     };
 
     const isGenerateButtonDisabled = isGeneratingImages || !productImage || !productName || (useReferenceFace && !referenceFaceImage);
-
+    
     return (
         <div className="font-sans text-white bg-gray-900 min-h-screen">
             <ExternalScriptsLoader />
             <div className="container mx-auto max-w-4xl p-4 sm:p-8">
-                {/* Header and main content remain the same */}
+                <header className="text-center mb-10">
+                   <div className="flex justify-center items-center mb-4 relative">
+                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                            TikTok Affiliate Auto Content
+                        </h1>
+                         <button onClick={handleStartOver} className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors bg-gray-800/50 hover:bg-gray-700/70 border border-gray-700 rounded-lg px-3 py-1.5">
+                            <RotateCcwIcon className="h-4 w-4" />
+                            <span>Mulai Ulang</span>
+                        </button>
+                   </div>
+                    <p className="mt-2 text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
+                        Buat seluruh aset konten (gambar, caption, voice over) untuk produk TikTok Affiliate Anda secara otomatis dengan AI.
+                    </p>
+                </header>
+
+                <main className="space-y-8">
+                    {apiError && <ErrorMessage>{apiError}</ErrorMessage>}
+
+                    {/* --- MAIN CARD --- */}
+                    <Card>
+                        <CardHeader><CardTitle icon="🎨">1. Informasi & Foto Produk</CardTitle></CardHeader>
+                        <CardContent>
+                            <div className="grid lg:grid-cols-2 gap-8">
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div><Label htmlFor="product-name">Nama Produk/Desain</Label><Input id="product-name" type="text" value={productName} onChange={(e) => updateState({ productName: e.target.value })} placeholder="Contoh: Desain 'Cosmic Youth'" /></div>
+                                        <div><Label htmlFor="product-type">Tipe Pakaian</Label><Select id="product-type" value={productType} onChange={(e) => updateState({ productType: e.target.value })}><option>Kaos</option><option>Hoodie</option><option>Jaket</option></Select></div>
+                                    </div>
+                                    <div>
+                                        <Label>Upload Gambar Desain (PNG Latar Transparan)</Label>
+                                        <div className="mt-2 flex justify-center items-center rounded-lg border-2 border-dashed border-gray-600 px-6 py-10 bg-gray-900/50">{productImageUrl ? <img src={productImageUrl} alt="Pratinjau Desain" className="max-h-32 rounded-lg" /> : <div className="text-center"><UploadCloudIcon className="mx-auto h-12 w-12 text-gray-500" /><label htmlFor="file-upload" className="relative cursor-pointer font-semibold text-blue-400 hover:text-blue-500"><span>Unggah file</span><input id="file-upload" type="file" className="sr-only" onChange={(e) => handleFileChange(e, 'product')} accept="image/png, image/jpeg" /></label></div>}</div>
+                                    </div>
+                                    <div className="space-y-4 rounded-lg bg-gray-900/50 p-4 border border-gray-700">
+                                      <Checkbox id="use-face" label="Gunakan Wajah Model Referensi (Opsional)" checked={useReferenceFace} onChange={(e) => updateState({ useReferenceFace: e.target.checked })} />
+                                      {useReferenceFace && <div className="animate-fade-in"><Label htmlFor="face-upload">Upload Foto Wajah Model</Label><div className="mt-2 flex justify-center rounded-lg border-2 border-dashed border-gray-600 px-6 py-10"><div className="text-center">{referenceFaceImageUrl ? <img src={referenceFaceImageUrl} alt="Pratinjau Wajah" className="max-h-32 rounded-lg" /> : <UploadCloudIcon className="mx-auto h-12 w-12 text-gray-500" />}<label htmlFor="face-upload" className="relative cursor-pointer font-semibold text-blue-400 hover:text-blue-500 mt-4 block"><span>Unggah wajah</span><input id="face-upload" type="file" className="sr-only" onChange={(e) => handleFileChange(e, 'face')} accept="image/*" /></label></div></div></div>}
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold text-lg mb-4 text-gray-200">Pilih Tema Latar</h3>
+                                    <div className="grid grid-cols-2 gap-3 mb-6">
+                                        {photoThemes.map(theme => <button key={theme.name} onClick={() => updateState({ selectedTheme: theme.name })} className={`p-3 rounded-lg text-sm transition-all border-2 ${selectedTheme === theme.name ? 'bg-blue-600 border-blue-500' : 'bg-gray-700 hover:bg-gray-600 border-gray-600'}`}>{theme.emoji} {theme.name}</button>)}
+                                    </div>
+                                    <Button onClick={handleGenerateImages} disabled={isGenerateButtonDisabled}>{isGeneratingImages ? <><LoaderCircleIcon className="animate-spin h-5 w-5" /> Membuat Mockup...</> : 'Generate Foto Mockup'}</Button>
+                                </div>
+                            </div>
+                            <div ref={resultsRef} className={`transition-opacity duration-500 ${generatedImages.length > 0 ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>
+                                <h3 className="font-semibold text-lg mt-8 mb-4 text-gray-200">Hasil Foto Mockup (9:16)</h3>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    {generatedImages.map((img, i) => <div key={i} className="relative group"><img src={img.url} alt={`Mockup ${i}`} className="aspect-[9/16] bg-gray-700 rounded-lg object-cover w-full" /><div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><button onClick={() => window.saveAs(img.url, `mockup-${i+1}.png`)} className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white text-xs px-3 py-1.5 rounded-full"><DownloadIcon className="h-4 w-4" /><span>Unduh</span></button></div></div>)}
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* --- TEXT & CAPTION CARD --- */}
+                    <div ref={textRef} className={`transition-opacity duration-500 ${generatedImages.length > 0 ? 'opacity-100' : 'opacity-0 hidden'}`}>
+                        <Card>
+                            <CardHeader><CardTitle icon="📝">2. Teks & Caption</CardTitle></CardHeader>
+                            <CardContent>
+                                <div className="grid md:grid-cols-2 gap-8 items-start">
+                                    <div className="space-y-4">
+                                        <Textarea rows={4} value={productDescription} onChange={(e) => updateState({ productDescription: e.target.value })} placeholder="Jelaskan keunggulan produk di sini..." />
+                                        <Button onClick={handleGenerateText} disabled={isGeneratingText}>{isGeneratingText ? <><LoaderCircleIcon className="animate-spin h-5 w-5" /> Membuat Teks...</> : 'Generate Teks & Caption'}</Button>
+                                    </div>
+                                    {generatedText && <div className="space-y-4 text-sm bg-gray-900/50 p-4 rounded-lg">
+                                        <div className="flex justify-between items-start"><div className="flex-1 pr-2"><strong className="text-blue-400 block mb-1">Hook:</strong><p>{generatedText.hook}</p></div><button onClick={() => handleCopyText(generatedText.hook, 'Hook')} className="p-1.5 text-gray-400 hover:text-white">{copiedText === 'Hook' ? <CheckIcon className="h-4 w-4 text-green-400" /> : <CopyIcon className="h-4 w-4" />}</button></div>
+                                        <div className="flex justify-between items-start"><div className="flex-1 pr-2"><strong className="text-blue-400 block mb-1">Caption:</strong><p>{generatedText.caption}</p></div><button onClick={() => handleCopyText(generatedText.caption, 'Caption')} className="p-1.5 text-gray-400 hover:text-white">{copiedText === 'Caption' ? <CheckIcon className="h-4 w-4 text-green-400" /> : <CopyIcon className="h-4 w-4" />}</button></div>
+                                        <div className="flex justify-between items-start"><div className="flex-1 pr-2"><strong className="text-blue-400 block mb-1">CTA:</strong><p>{generatedText.cta}</p></div><button onClick={() => handleCopyText(generatedText.cta, 'CTA')} className="p-1.5 text-gray-400 hover:text-white">{copiedText === 'CTA' ? <CheckIcon className="h-4 w-4 text-green-400" /> : <CopyIcon className="h-4 w-4" />}</button></div>
+                                    </div>}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* --- VOICE OVER CARD --- */}
+                     <div ref={voiceRef} className={`transition-opacity duration-500 ${generatedText ? 'opacity-100' : 'opacity-0 hidden'}`}>
+                        <Card>
+                            <CardHeader><CardTitle icon="🎙️">3. Voice Over & Skrip</CardTitle></CardHeader>
+                            <CardContent>
+                                <div className="grid md:grid-cols-2 gap-8 items-start">
+                                    <div className="space-y-4">
+                                        <Textarea rows={4} value={sourceText} onChange={(e) => updateState({ sourceText: e.target.value })} placeholder="Teks sumber untuk suara..." />
+                                        <Select value={voiceStyle} onChange={(e) => updateState({ voiceStyle: e.target.value })}><option>Wanita Natural 🇮🇩</option><option>Pria Formal 🇮🇩</option><option>Wanita Ceria 🇮🇩</option></Select>
+                                        <Button onClick={handleGenerateScripts} disabled={isGeneratingScripts || !sourceText}>{isGeneratingScripts ? <><LoaderCircleIcon className="animate-spin h-5 w-5" /> Membuat Suara...</> : 'Generate Voice Over'}</Button>
+                                    </div>
+                                    {generatedScripts && <div className="space-y-4 bg-gray-900/50 p-4 rounded-lg">
+                                        <div><Label>Hasil Suara AI</Label>{generatedScripts.audioUrl && <audio controls src={generatedScripts.audioUrl} className="w-full"></audio>}</div>
+                                        <div className="text-sm"><p className="font-semibold text-gray-200">Video Prompt (untuk AI Video):</p><p className="font-mono text-xs text-gray-400 bg-black/30 p-2 rounded mt-1">{generatedScripts.videoPrompt}</p></div>
+                                    </div>}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* --- DOWNLOAD CARD --- */}
+                    <div ref={downloadRef} className={`transition-opacity duration-500 ${generatedScripts ? 'opacity-100' : 'opacity-0 hidden'}`}>
+                        <Card>
+                            <CardHeader className="text-center"><CardTitle icon={<PackageCheckIcon className="h-8 w-8 text-green-400" />} className="justify-center text-3xl">4. Paket Konten Siap</CardTitle><p className="text-gray-400 mt-2">Unduh semua aset dalam satu file ZIP.</p></CardHeader>
+                            <CardContent className="text-center">
+                                <div className="max-w-md mx-auto bg-gray-900/80 p-6 rounded-2xl">
+                                    <div className="grid grid-cols-2 gap-4 text-left">
+                                        <div className="font-semibold text-gray-300">Foto Produk AI:</div><div className="text-green-400">{generatedImages.length} file</div>
+                                        <div className="font-semibold text-gray-300">Teks Konten:</div><div className="text-green-400">1 file</div>
+                                        <div className="font-semibold text-gray-300">Skrip & Suara AI:</div><div className="text-green-400">2 file</div>
+                                        <div className="col-span-2 my-2 border-t border-gray-700"></div>
+                                        <div className="font-semibold text-gray-300">Ukuran Total:</div><div>{zipSize || 'Menghitung...'}</div>
+                                    </div>
+                                </div>
+                                <div className="mt-8 max-w-sm mx-auto">
+                                    <Button onClick={handleDownloadZip} disabled={isDownloading}>{isDownloading ? <LoaderCircleIcon className="animate-spin h-5 w-5 mr-2" /> : <DownloadIcon className="h-5 w-5 mr-2" />}{isDownloading ? 'Menyiapkan file...' : `Download Semua File (.zip)`}</Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </main>
             </div>
         </div>
     );
 }
+
 
