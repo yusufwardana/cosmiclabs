@@ -224,33 +224,33 @@ export default function App() {
         if (!canGenerate(cost)) return;
         updateState({ isGeneratingImages: true, apiError: null, generatedImages: [] });
         try {
-            const faceInstruction = useReferenceFace ? `Wajah model harus sangat mirip dengan orang di foto referensi wajah.` : `Modelnya adalah orang Indonesia yang stylish dan fotogenik.`;
+            const faceInstruction = useReferenceFace ? `The model's face must closely resemble the person in the reference face photo.` : `The model is a stylish photogenic Indonesian person.`;
             let themeInstruction = '';
             switch (selectedTheme) {
-                case 'Studio Minimalis': themeInstruction = 'Foto diambil di studio profesional dengan latar belakang putih atau abu-abu muda yang bersih. Pencahayaan lembut dan merata.'; break;
-                case 'Cafe Estetik': themeInstruction = 'Foto diambil di kafe modern yang estetis dengan cahaya alami dari jendela. Suasananya hangat dan santai.'; break;
-                case 'Outdoor Ceria': themeInstruction = 'Foto diambil di luar ruangan seperti taman atau kebun yang cerah. Suasananya ceria dan penuh warna.'; break;
-                case 'Urban Street': themeInstruction = 'Ini adalah foto gaya jalanan yang keren, diambil di lingkungan perkotaan modern, misalnya di depan dinding bertekstur atau di jalanan kota.'; break;
+                case 'Studio Minimalis': themeInstruction = 'The photo is a professional shot in a studio with a clean, minimalist light-gray background and soft, even lighting.'; break;
+                case 'Cafe Estetik': themeInstruction = 'The photo is taken in a modern, stylish cafe with natural window light and warm, cozy tones. Cinematic.'; break;
+                case 'Outdoor Ceria': themeInstruction = 'The photo is taken outdoors in a bright, sunny park or garden. The mood is happy and cheerful. Golden hour lighting.'; break;
+                case 'Urban Street': themeInstruction = 'This is a cool street-style photograph taken in a modern urban setting, like against a concrete wall or on a city street. Edgy vibe.'; break;
             }
             let baseInstruction = '';
             if (uploadType === 'design') {
                 let sizeInstruction = '';
                 switch(designSize) {
-                    case 'full': sizeInstruction = `seluruh bagian depan ${productType} ditutupi oleh desain grafis dari gambar pertama.`; break;
-                    case 'medium': sizeInstruction = `desain grafis dari gambar pertama ditempatkan secara jelas di bagian tengah dada ${productType}.`; break;
-                    case 'small': sizeInstruction = `versi kecil dari desain grafis gambar pertama ditempatkan di dada kiri ${productType}, seperti logo saku.`; break;
+                    case 'full': sizeInstruction = `The graphic design from the uploaded image is applied as an all-over print covering the entire front of the ${productType}.`; break;
+                    case 'medium': sizeInstruction = `The graphic design from the uploaded image is placed prominently and realistically in the center of the chest of the ${productType}.`; break;
+                    case 'small': sizeInstruction = `A small version of the graphic design from the uploaded image is placed on the left chest area of the ${productType}, like a pocket logo.`; break;
                 }
-                baseInstruction = `Model sedang mengenakan ${productType} di mana ${sizeInstruction} Desain harus terlihat jelas dan diterapkan secara realistis.`;
+                baseInstruction = `The model is wearing a ${productType}. ${sizeInstruction} The design must be clearly visible and realistically applied.`;
             } else {
-                baseInstruction = `Model sedang mengenakan ${productType} yang sama persis seperti yang terlihat pada gambar produk yang diunggah.`;
+                baseInstruction = `The model is wearing the exact same ${productType} as seen in the uploaded product photo.`;
             }
             
             const prompts = [
-                `Foto medium shot. ${baseInstruction} ${faceInstruction} ${themeInstruction} Model tersenyum dan melihat ke arah kamera.`,
-                `Foto full body. ${baseInstruction} ${faceInstruction} ${themeInstruction} Model dalam pose yang santai dan alami.`,
-                `Foto candid dari samping. ${baseInstruction} ${faceInstruction} ${themeInstruction} Model melihat ke samping, tidak ke kamera.`,
-                `Foto close-up dari pinggang ke atas. ${baseInstruction} ${faceInstruction} ${themeInstruction} Fokus pada detail produk dan ekspresi model.`,
-            ].map(p => `${p} Foto fashion berkualitas tinggi, sinematik, rasio aspek 9:16.`);
+                `Medium shot. ${baseInstruction} ${faceInstruction} ${themeInstruction} The model is smiling and looking at the camera.`,
+                `Full body shot. ${baseInstruction} ${faceInstruction} ${themeInstruction} The model is in a relaxed, natural pose.`,
+                `Candid, angled shot. ${baseInstruction} ${faceInstruction} ${themeInstruction} The model is looking slightly away from the camera.`,
+                `Waist-up close-up shot. ${baseInstruction} ${faceInstruction} ${themeInstruction} Focus on the product details and the model's expression.`,
+            ].map(p => `${p} A high-quality, hyperrealistic fashion photograph, shot on a 50mm lens, high detail, 8K resolution. 9:16 aspect ratio.`);
 
             const productImageBase64 = await toBase64(productImage);
             const faceImageBase64 = useReferenceFace ? await toBase64(referenceFaceImage) : null;
@@ -275,7 +275,7 @@ export default function App() {
             });
             updateState({ 
                 generatedImages: imageUrls.map(url => ({ url })),
-                productDescription: `Sebuah ${productType} "${productName}" dengan desain eksklusif, cocok untuk gaya ${selectedTheme}. Bahannya nyaman dan berkualitas tinggi.`,
+                productDescription: `A high-quality ${productType} named "${productName}" with an exclusive design, perfect for a ${selectedTheme} style. Made from comfortable, premium materials.`,
                 credits: state.credits - cost,
                 countdown: COOLDOWN_SECONDS,
             });
@@ -311,7 +311,7 @@ export default function App() {
         try {
             const textApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`;
             const scriptSchema = { type: "OBJECT", properties: { voiceScript: { type: "STRING" }, videoPrompt: { type: "STRING" }}, required: ["voiceScript", "videoPrompt"] };
-            const scriptSystemPrompt = `You are a creative director for AI-generated TikTok ads. Your task is to create a prompt for an **image-to-video model**. The prompt **must start with the phrase "Gunakan salah satu foto yang dihasilkan sebagai referensi utama."**. Then, describe a short, 5-10 second video scene in Indonesian based on the provided ad copy and photo theme. The description should focus on **subtle movements** suitable for animating a still image, like a slight smile, a head turn, hair moving in a breeze, or background elements animating (e.g., coffee steam, city lights). Mention quick cuts and energetic transitions suitable for TikTok. The final output must be a JSON object containing this video prompt and a short voice-over script.`;
+            const scriptSystemPrompt = `You are a creative director for AI-generated TikTok ads. Your task is to create a prompt for an **image-to-video model**. The prompt **must start with the phrase "Using one of the generated photos as a keyframe reference,"**. Then, describe a short, 5-10 second video scene in English based on the provided ad copy and photo theme. The description should focus on **subtle movements** suitable for animating a still image, like a slight smile, a head turn, hair moving in a breeze, or background elements animating (e.g., coffee steam, city lights). Mention quick cuts and energetic transitions suitable for TikTok. The final output must be a JSON object containing this video prompt and a short voice-over script in Indonesian.`;
             const scriptUserPrompt = `Ad copy: "${sourceText}". Photo Theme: "${selectedTheme}".`;
             const scriptPayload = { contents: [{ parts: [{ text: scriptUserPrompt }] }], systemInstruction: { parts: [{ text: scriptSystemPrompt }] }, generationConfig: { responseMimeType: "application/json", responseSchema: scriptSchema } };
             const scriptResult = await callGeminiApi(textApiUrl, scriptPayload);
