@@ -1,1 +1,246 @@
 
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Content Studio — GitHub Style</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0d1117;
+      color: #c9d1d9;
+    }
+    .panel {
+      background-color: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      transition: all 0.2s;
+    }
+    .btn {
+      @apply font-medium py-2 px-4 rounded-md text-sm flex items-center justify-center gap-2;
+      background-color: #238636;
+      color: #fff;
+      border: 1px solid #2ea043;
+      transition: 0.15s;
+    }
+    .btn:hover:not(:disabled) {
+      background-color: #2ea043;
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    input, select, textarea {
+      background-color: #0d1117;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      border-radius: 6px;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #58a6ff;
+    }
+    .loader {
+      border: 3px solid #30363d;
+      border-top: 3px solid #58a6ff;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <div class="container mx-auto max-w-2xl p-4 md:p-8">
+    <header class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-white">🧠 AI Content Studio</h1>
+      <p class="text-gray-400 mt-1 text-sm">Powered by Gemini — GitHub Inspired UI</p>
+    </header>
+
+    <div class="space-y-6">
+      <!-- Input Panel -->
+      <div class="panel p-6 space-y-4">
+        <input id="productName" type="text" placeholder="Nama Produk (contoh: Jaket Explorer)" class="w-full p-2 text-sm" />
+        <select id="productType" class="w-full p-2 text-sm">
+          <option value="" disabled selected>Pilih Jenis Produk</option>
+          <option value="hoodie">Hoodie</option>
+          <option value="t-shirt">Kaos</option>
+          <option value="jacket">Jaket</option>
+        </select>
+        <div class="flex gap-3">
+          <label class="flex-1 flex flex-col items-center justify-center border border-dashed border-gray-600 rounded-md p-3 cursor-pointer hover:bg-[#1c2128]">
+            <span id="productImageName" class="text-xs text-gray-400">Unggah Produk</span>
+            <input type="file" id="productImage" class="hidden" accept="image/*">
+          </label>
+          <label class="flex-1 flex flex-col items-center justify-center border border-dashed border-gray-600 rounded-md p-3 cursor-pointer hover:bg-[#1c2128]">
+            <span id="faceImageName" class="text-xs text-gray-400">Unggah Wajah (opsional)</span>
+            <input type="file" id="faceImage" class="hidden" accept="image/*">
+          </label>
+        </div>
+        <div class="flex gap-2 text-xs">
+          <label class="flex-1 text-center border rounded-md cursor-pointer p-2 hover:bg-[#1c2128]">
+            <input type="radio" name="modelGender" value="Pria" checked> Pria
+          </label>
+          <label class="flex-1 text-center border rounded-md cursor-pointer p-2 hover:bg-[#1c2128]">
+            <input type="radio" name="modelGender" value="Wanita"> Wanita
+          </label>
+        </div>
+        <input id="customBackground" type="text" placeholder="Deskripsi latar belakang (opsional)" class="w-full p-2 text-sm">
+      </div>
+
+      <button id="generateImageBtn" class="btn w-full"><i data-lucide="sparkles"></i>Generate Gambar</button>
+
+      <!-- Hasil -->
+      <div id="resultSection" class="space-y-6 pt-6">
+        <div id="imageResult" class="grid grid-cols-2 gap-3"></div>
+
+        <div id="textSection" class="panel p-4 space-y-3 hidden">
+          <button id="generateTextBtn" class="btn bg-[#1f6feb] w-full"><i data-lucide="file-text"></i>Buat Teks</button>
+          <div id="textLoader" class="hidden flex justify-center py-3"><div class="loader"></div></div>
+
+          <div id="textFields" class="hidden space-y-3">
+            <textarea id="contentDescription" rows="2" readonly placeholder="Deskripsi..." class="w-full p-2 text-sm"></textarea>
+            <textarea id="tiktokCaption" rows="2" readonly placeholder="Caption TikTok..." class="w-full p-2 text-sm"></textarea>
+            <textarea id="promoNarrative" rows="3" readonly placeholder="Narasi..." class="w-full p-2 text-sm"></textarea>
+            <textarea id="videoPrompt" rows="3" readonly placeholder="Prompt Video..." class="w-full p-2 text-sm"></textarea>
+            <div class="flex gap-2 pt-2 border-t border-gray-700">
+              <button id="generateMaleAudioBtn" class="btn bg-[#1f6feb] flex-1" disabled><i data-lucide="mic"></i>Suara Pria</button>
+              <button id="generateFemaleAudioBtn" class="btn bg-pink-600 flex-1" disabled><i data-lucide="mic"></i>Suara Wanita</button>
+            </div>
+            <div id="maleAudioContainer" class="hidden mt-3"><audio controls class="w-full"></audio></div>
+            <div id="femaleAudioContainer" class="hidden mt-3"><audio controls class="w-full"></audio></div>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <button id="resetBtn" class="btn bg-gray-600"><i data-lucide="rotate-cw"></i>Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="text-center mt-8 text-xs text-gray-500">
+      Kuota: <b id="apiCreditCounter"></b> | <span id="apiTimer"></span>
+    </footer>
+  </div>
+
+  <script>
+    // === script.js ===
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      const get = (id) => document.getElementById(id);
+      const els = {
+        btnImg: get('generateImageBtn'),
+        btnTxt: get('generateTextBtn'),
+        btnReset: get('resetBtn'),
+        btnMale: get('generateMaleAudioBtn'),
+        btnFemale: get('generateFemaleAudioBtn'),
+        imgRes: get('imageResult'),
+        txtSec: get('textSection'),
+        txtFld: get('textFields'),
+        loaderTxt: get('textLoader'),
+        prodName: get('productName'),
+        prodType: get('productType'),
+        prodImg: get('productImage'),
+        faceImg: get('faceImage'),
+        prodNameLbl: get('productImageName'),
+        faceNameLbl: get('faceImageName'),
+        desc: get('contentDescription'),
+        cap: get('tiktokCaption'),
+        nar: get('promoNarrative'),
+        vid: get('videoPrompt'),
+        maleAudio: get('maleAudioContainer'),
+        femaleAudio: get('femaleAudioContainer'),
+        credits: get('apiCreditCounter'),
+        timer: get('apiTimer')
+      };
+
+      const API_KEY = ""; // 🔑 ISI API KEY KAMU DI SINI
+      const IMG_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${API_KEY}`;
+      const TXT_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+      const TTS_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${API_KEY}`;
+
+      // Credit limiter (dummy)
+      let credits = 15;
+      els.credits.textContent = credits + "/15";
+
+      async function apiFetch(url, payload) {
+        const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+        if (!res.ok) throw new Error((await res.json()).error?.message || "API Error");
+        return res.json();
+      }
+
+      function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(r.result.split(",")[1]);
+          r.onerror = reject;
+          r.readAsDataURL(file);
+        });
+      }
+
+      els.prodImg.addEventListener('change', () => {
+        els.prodNameLbl.textContent = els.prodImg.files.length ? "✔️ Produk" : "Unggah Produk";
+      });
+      els.faceImg.addEventListener('change', () => {
+        els.faceNameLbl.textContent = els.faceImg.files.length ? "✔️ Wajah" : "Unggah Wajah";
+      });
+
+      // Generate Image
+      els.btnImg.addEventListener('click', async () => {
+        if (!els.prodName.value || !els.prodType.value || !els.prodImg.files[0]) return alert("Isi nama, jenis, dan gambar produk dulu!");
+        els.btnImg.disabled = true;
+        els.imgRes.innerHTML = `<div class='flex justify-center py-6'><div class='loader'></div></div>`;
+        const imgBase = await fileToBase64(els.prodImg.files[0]);
+        const parts = [{ text: `Fashion photo of ${els.prodName.value}, a ${els.prodType.value}, Indonesian model` }, { inlineData: { mimeType: els.prodImg.files[0].type, data: imgBase } }];
+        try {
+          const res = await apiFetch(IMG_URL, { contents: [{ parts }] });
+          const base64 = res.candidates[0].content.parts.find(p => p.inlineData)?.inlineData?.data;
+          els.imgRes.innerHTML = `<img src="data:image/png;base64,${base64}" class="w-full rounded-lg">`;
+          els.txtSec.classList.remove('hidden');
+        } catch (err) {
+          els.imgRes.innerHTML = `<p class="text-center text-red-500">${err.message}</p>`;
+        } finally {
+          els.btnImg.disabled = false;
+        }
+      });
+
+      // Generate Text
+      els.btnTxt.addEventListener('click', async () => {
+        els.btnTxt.disabled = true;
+        els.loaderTxt.classList.remove('hidden');
+        els.txtFld.classList.add('hidden');
+        try {
+          const prompt = `Buat teks promosi viral untuk produk ${els.prodType.value} bernama "${els.prodName.value}" dengan format: DESKRIPSI:, CAPTION:, NARASI:, PROMPT_VIDEO:.`;
+          const res = await apiFetch(TXT_URL, { contents: [{ parts: [{ text: prompt }] }] });
+          const text = res.candidates[0].content.parts[0].text;
+          els.desc.value = text.match(/DESKRIPSI:\s*(.*)/i)?.[1] || "";
+          els.cap.value = text.match(/CAPTION:\s*(.*)/i)?.[1] || "";
+          els.nar.value = text.match(/NARASI:\s*([\s\S]*?)PROMPT_VIDEO:/i)?.[1]?.trim() || "";
+          els.vid.value = text.match(/PROMPT_VIDEO:\s*(.*)/i)?.[1] || "";
+          els.txtFld.classList.remove('hidden');
+          els.btnMale.disabled = false;
+          els.btnFemale.disabled = false;
+        } catch (err) {
+          alert("Gagal membuat teks: " + err.message);
+        } finally {
+          els.loaderTxt.classList.add('hidden');
+          els.btnTxt.disabled = false;
+        }
+      });
+
+      // Reset
+      els.btnReset.addEventListener('click', () => location.reload());
+    });
+  </script>
+</body>
+</html>
