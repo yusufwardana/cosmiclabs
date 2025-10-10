@@ -102,25 +102,17 @@ const Select = ({ children, ...props }) => <select {...props} className={`mt-1 b
 const Checkbox = ({ id, label, checked, onChange }) => <div className="flex items-center"><input id={id} type="checkbox" checked={checked} onChange={onChange} className="h-4 w-4 rounded border-gray-500 bg-gray-700 text-blue-600 focus:ring-blue-600" /><label htmlFor={id} className="ml-3 block text-sm font-medium text-gray-300">{label}</label></div>;
 const ErrorMessage = ({ children }) => <div className="my-4 flex items-center gap-2 text-sm text-red-400 bg-red-900/50 p-3 rounded-lg"><AlertTriangleIcon className="h-5 w-5 flex-shrink-0" />{children}</div>;
 
-const GeneratingModal = ({ show, title, progress, status }) => {
-    if (!show) return null;
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 animate-fade-in">
-            <div className="bg-gray-800 border border-gray-700 rounded-2xl p-8 w-full max-w-md text-center">
-                <LoaderCircleIcon className="mx-auto h-12 w-12 text-blue-400 animate-spin" />
-                <h3 className="mt-4 text-2xl font-semibold text-white">{title}</h3>
-                <p className="mt-2 text-gray-400">Please wait while we process your request...</p>
-                <div className="mt-6">
-                    <div className="w-full bg-gray-700 rounded-full h-2.5">
-                        <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${progress}%`, transition: 'width 0.5s ease-in-out' }}></div>
-                    </div>
-                    <p className="mt-2 text-sm text-gray-500">{Math.round(progress)}% complete</p>
-                    <p className="mt-1 text-sm text-gray-400 font-semibold">{status}</p>
-                </div>
-            </div>
+const ProgressBar = ({ progress, status }) => (
+    <div className="mt-4 space-y-2 animate-fade-in">
+        <div className="w-full bg-gray-700 rounded-full h-2.5">
+            <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${progress}%`, transition: 'width 0.5s ease-in-out' }}></div>
         </div>
-    );
-};
+        <div className="flex justify-between text-sm">
+            <span className="text-gray-400 font-semibold">{status}</span>
+            <span className="text-gray-500">{Math.round(progress)}%</span>
+        </div>
+    </div>
+);
 
 const photoThemes = [ { name: 'Studio Minimalis', emoji: '⚪' }, { name: 'Cafe Estetik', emoji: '☕' }, { name: 'Outdoor Ceria', emoji: '🌳' }, { name: 'Urban Street', emoji: '🏙️' }];
 const COOLDOWN_SECONDS = 30;
@@ -132,7 +124,7 @@ const initialState = {
     generatedImages: [], productDescription: '', generatedText: null, sourceText: '',
     voiceStyle: 'Wanita Natural 🇮🇩', generatedScripts: null, isDownloading: false,
     zipSize: null, credits: 20, countdown: 0, 
-    generatingStatus: { active: false, title: '', progress: 0, status: '' },
+    generatingStatus: { active: false, type: null, progress: 0, status: '' },
 };
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
@@ -213,7 +205,7 @@ export default function App() {
     const handleGenerateImages = async () => {
         const cost = 4;
         if (!canGenerate(cost)) return;
-        updateState({ generatingStatus: { active: true, title: 'Generating Images...', progress: 0, status: 'Preparing prompts...' }, apiError: null, generatedImages: [] });
+        updateState({ generatingStatus: { active: true, type: 'images', progress: 0, status: 'Preparing prompts...' }, apiError: null, generatedImages: [] });
         try {
             const faceInstruction = useReferenceFace ? `The model's face must closely resemble the person in the reference face photo.` : `The model is a stylish photogenic Indonesian person.`;
             let themeInstruction = '';
@@ -234,7 +226,7 @@ export default function App() {
 
             let imageUrls = [];
             for (let i = 0; i < prompts.length; i++) {
-                updateState(p => ({ ...p, generatingStatus: { ...p.generatingStatus, progress: (i / prompts.length) * 100, status: `Processing image ${i + 1} of ${prompts.length}...` } }));
+                updateState({ generatingStatus: { active: true, type: 'images', progress: (i / prompts.length) * 100, status: `Processing image ${i + 1} of ${prompts.length}...` }});
                 const parts = [{ text: prompts[i] }, { inlineData: { mimeType: productImage.type, data: productImageBase64 } }];
                 if (useReferenceFace && faceImageBase64) { parts.push({ inlineData: { mimeType: referenceFaceImage.type, data: faceImageBase64 } }); }
                 const payload = { generationConfig: { responseModalities: ['IMAGE'], imageConfig: { aspectRatio: "9:16" } }, contents: [{ parts }] };
@@ -246,8 +238,8 @@ export default function App() {
                 imageUrls.push(`data:image/png;base64,${imagePart.inlineData.data}`);
             }
 
-            updateState(p => ({ ...p, generatingStatus: { ...p.generatingStatus, progress: 100, status: 'Finalizing...' }}));
             updateState({ 
+                generatingStatus: { active: true, type: 'images', progress: 100, status: 'Finalizing...' },
                 generatedImages: imageUrls.map(url => ({ url })),
                 productDescription: `A high-quality ${productType} named "${productName}" with an exclusive design, perfect for a ${selectedTheme} style. Made from comfortable, premium materials.`,
                 credits: state.credits - cost,
@@ -256,35 +248,35 @@ export default function App() {
         } catch (error) {
             updateState({ apiError: `${error.message}` });
         } finally {
-            setTimeout(() => updateState({ generatingStatus: { active: false, title: '', progress: 0, status: '' } }), 500);
+            setTimeout(() => updateState({ generatingStatus: { active: false, type: null, progress: 0, status: '' } }), 500);
         }
     };
     
     const handleGenerateText = async () => {
         if (!canGenerate()) return;
-        updateState({ generatingStatus: { active: true, title: 'Generating Text...', progress: 0, status: 'Initializing...' }, apiError: null });
+        updateState({ generatingStatus: { active: true, type: 'text', progress: 0, status: 'Initializing...' }, apiError: null });
         try {
-            updateState(p => ({...p, generatingStatus: {...p.generatingStatus, progress: 30, status: 'Crafting content...'}}));
+            updateState({ generatingStatus: { active: true, type: 'text', progress: 30, status: 'Crafting content...' }});
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`;
             const schema = { type: "OBJECT", properties: { hook: { type: "STRING" }, caption: { type: "STRING" }, cta: { type: "STRING" } }, required: ["hook", "caption", "cta"] };
             const systemPrompt = `You are an expert social media marketer for TikTok affiliate content in Indonesia. Your tone is casual, persuasive, and uses trendy Indonesian slang. Generate content based on the user's product description. The output must be in JSON format.`;
             const userPrompt = `Product description: "${productDescription || productName}". Generate a hook, a TikTok caption, and a strong call-to-action (CTA).`;
             const payload = { contents: [{ parts: [{ text: userPrompt }] }], systemInstruction: { parts: [{ text: systemPrompt }] }, generationConfig: { responseMimeType: "application/json", responseSchema: schema } };
             const result = await callGeminiApi(apiUrl, payload);
-            updateState(p => ({...p, generatingStatus: {...p.generatingStatus, progress: 80, status: 'Parsing response...'}}));
+            updateState({ generatingStatus: { active: true, type: 'text', progress: 80, status: 'Parsing response...' }});
             const data = JSON.parse(result.candidates[0].content.parts[0].text);
             updateState({ generatedText: data, sourceText: data.caption || '', credits: state.credits - 1, countdown: COOLDOWN_SECONDS });
         } catch (error) {
             updateState({ apiError: `Gagal membuat teks: ${error.message}` });
         } finally {
-            updateState(p => ({...p, generatingStatus: {...p.generatingStatus, progress: 100, status: 'Done!'}}));
-            setTimeout(() => updateState({ generatingStatus: { active: false, title: '', progress: 0, status: '' } }), 500);
+            updateState({ generatingStatus: { active: true, type: 'text', progress: 100, status: 'Done!' }});
+            setTimeout(() => updateState({ generatingStatus: { active: false, type: null, progress: 0, status: '' } }), 500);
         }
     };
 
     const handleGenerateScripts = async () => {
         if (!canGenerate(2)) return;
-        updateState({ generatingStatus: { active: true, title: 'Generating Scripts & Voice...', progress: 0, status: 'Writing scripts...' }, apiError: null });
+        updateState({ generatingStatus: { active: true, type: 'scripts', progress: 0, status: 'Writing scripts...' }, apiError: null });
         try {
             const textApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`;
             const scriptSchema = { type: "OBJECT", properties: { voiceScript: { type: "STRING" }, videoPrompt: { type: "STRING" }}, required: ["voiceScript", "videoPrompt"] };
@@ -294,7 +286,7 @@ export default function App() {
             const scriptResult = await callGeminiApi(textApiUrl, scriptPayload);
             const scriptsData = JSON.parse(scriptResult.candidates[0].content.parts[0].text);
 
-            updateState(p => ({...p, generatingStatus: {...p.generatingStatus, progress: 50, status: 'Generating voice-over...'}}));
+            updateState({ generatingStatus: { active: true, type: 'scripts', progress: 50, status: 'Generating voice-over...' }});
             
             const ttsApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent`;
             const voiceMap = { 'Wanita Natural 🇮🇩': { voiceName: 'Kore', promptDesc: 'cheerful natural' }, 'Pria Formal 🇮🇩': { voiceName: 'Charon', promptDesc: 'formal informative' }, 'Wanita Ceria 🇮🇩': { voiceName: 'Puck', promptDesc: 'energetic excited' } };
@@ -309,8 +301,8 @@ export default function App() {
         } catch (error) {
             updateState({ apiError: `Gagal membuat suara: ${error.message}` });
         } finally {
-            updateState(p => ({...p, generatingStatus: {...p.generatingStatus, progress: 100, status: 'Done!'}}));
-            setTimeout(() => updateState({ generatingStatus: { active: false, title: '', progress: 0, status: '' } }), 500);
+            updateState({ generatingStatus: { active: true, type: 'scripts', progress: 100, status: 'Done!' }});
+            setTimeout(() => updateState({ generatingStatus: { active: false, type: null, progress: 0, status: '' } }), 500);
         }
     };
     
@@ -321,8 +313,6 @@ export default function App() {
     return (
         <div className="font-sans text-white bg-gray-900 min-h-screen">
             <ExternalScriptsLoader />
-            <GeneratingModal show={generatingStatus.active} title={generatingStatus.title} progress={generatingStatus.progress} status={generatingStatus.status} />
-            
             <div className="container mx-auto max-w-5xl p-4 sm:p-8">
                 <header className="text-center mb-10">
                    <div className="flex justify-between items-center mb-4 relative">
@@ -372,6 +362,7 @@ export default function App() {
                                         {photoThemes.map(theme => <button key={theme.name} onClick={() => updateState({ selectedTheme: theme.name })} className={`p-3 rounded-lg text-sm transition-all border-2 ${selectedTheme === theme.name ? 'bg-blue-600 border-blue-500' : 'bg-gray-700 hover:bg-gray-600 border-gray-600'}`}>{theme.emoji} {theme.name}</button>)}
                                     </div>
                                     <Button onClick={handleGenerateImages} disabled={isGenerateButtonDisabled}>{countdown > 0 ? `Tunggu ${countdown}s` : 'Generate 4 Foto (-4 Kredit)'}</Button>
+                                    {generatingStatus.active && generatingStatus.type === 'images' && (<ProgressBar progress={generatingStatus.progress} status={generatingStatus.status} />)}
                                 </div>
                             </div>
                              <div className={`transition-opacity duration-500 ${generatedImages.length > 0 ? 'opacity-100 mt-8' : 'opacity-0 h-0 overflow-hidden'}`}>
@@ -383,9 +374,9 @@ export default function App() {
                         </CardContent>
                     </Card>
 
-                    <div ref={textRef} className={`transition-opacity duration-500 ${generatedImages.length > 0 ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden invisible'}`}><Card><CardHeader><CardTitle icon="📝">2. Teks & Caption</CardTitle><button onClick={handleStartOver} className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"><RotateCcwIcon className="h-4 w-4" /><span>Mulai Ulang</span></button></CardHeader><CardContent><div className="grid md:grid-cols-2 gap-8 items-start"><div className="space-y-4"><Textarea rows={4} value={productDescription} onChange={(e) => updateState({ productDescription: e.target.value })} placeholder="Jelaskan keunggulan produk di sini..." /><Button onClick={handleGenerateText} disabled={generatingStatus.active || countdown > 0 || credits < 1}>{countdown > 0 ? `Tunggu ${countdown}s` : 'Generate Teks (-1 Kredit)'}</Button></div>{generatedText && <div className="space-y-4 text-sm bg-gray-900/50 p-4 rounded-lg"><div className="flex justify-between items-start"><div className="flex-1 pr-2"><strong className="text-blue-400 block mb-1">Hook:</strong><p>{generatedText.hook}</p></div><button onClick={() => handleCopyText(generatedText.hook, 'Hook')} className="p-1.5 text-gray-400 hover:text-white">{copiedText === 'Hook' ? <CheckIcon className="h-4 w-4 text-green-400" /> : <CopyIcon className="h-4 w-4" />}</button></div><div className="flex justify-between items-start"><div className="flex-1 pr-2"><strong className="text-blue-400 block mb-1">Caption:</strong><p>{generatedText.caption}</p></div><button onClick={() => handleCopyText(generatedText.caption, 'Caption')} className="p-1.5 text-gray-400 hover:text-white">{copiedText === 'Caption' ? <CheckIcon className="h-4 w-4 text-green-400" /> : <CopyIcon className="h-4 w-4" />}</button></div><div className="flex justify-between items-start"><div className="flex-1 pr-2"><strong className="text-blue-400 block mb-1">CTA:</strong><p>{generatedText.cta}</p></div><button onClick={() => handleCopyText(generatedText.cta, 'CTA')} className="p-1.5 text-gray-400 hover:text-white">{copiedText === 'CTA' ? <CheckIcon className="h-4 w-4 text-green-400" /> : <CopyIcon className="h-4 w-4" />}</button></div></div>}</div></CardContent></Card></div>
+                    <div ref={textRef} className={`transition-opacity duration-500 ${generatedImages.length > 0 ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden invisible'}`}><Card><CardHeader><CardTitle icon="📝">2. Teks & Caption</CardTitle><button onClick={handleStartOver} className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"><RotateCcwIcon className="h-4 w-4" /><span>Mulai Ulang</span></button></CardHeader><CardContent><div className="grid md:grid-cols-2 gap-8 items-start"><div className="space-y-4"><Textarea rows={4} value={productDescription} onChange={(e) => updateState({ productDescription: e.target.value })} placeholder="Jelaskan keunggulan produk di sini..." /><Button onClick={handleGenerateText} disabled={generatingStatus.active || countdown > 0 || credits < 1}>{countdown > 0 ? `Tunggu ${countdown}s` : 'Generate Teks (-1 Kredit)'}</Button>{generatingStatus.active && generatingStatus.type === 'text' && (<ProgressBar progress={generatingStatus.progress} status={generatingStatus.status} />)}</div>{generatedText && <div className="space-y-4 text-sm bg-gray-900/50 p-4 rounded-lg"><div className="flex justify-between items-start"><div className="flex-1 pr-2"><strong className="text-blue-400 block mb-1">Hook:</strong><p>{generatedText.hook}</p></div><button onClick={() => handleCopyText(generatedText.hook, 'Hook')} className="p-1.5 text-gray-400 hover:text-white">{copiedText === 'Hook' ? <CheckIcon className="h-4 w-4 text-green-400" /> : <CopyIcon className="h-4 w-4" />}</button></div><div className="flex justify-between items-start"><div className="flex-1 pr-2"><strong className="text-blue-400 block mb-1">Caption:</strong><p>{generatedText.caption}</p></div><button onClick={() => handleCopyText(generatedText.caption, 'Caption')} className="p-1.5 text-gray-400 hover:text-white">{copiedText === 'Caption' ? <CheckIcon className="h-4 w-4 text-green-400" /> : <CopyIcon className="h-4 w-4" />}</button></div><div className="flex justify-between items-start"><div className="flex-1 pr-2"><strong className="text-blue-400 block mb-1">CTA:</strong><p>{generatedText.cta}</p></div><button onClick={() => handleCopyText(generatedText.cta, 'CTA')} className="p-1.5 text-gray-400 hover:text-white">{copiedText === 'CTA' ? <CheckIcon className="h-4 w-4 text-green-400" /> : <CopyIcon className="h-4 w-4" />}</button></div></div>}</div></CardContent></Card></div>
 
-                     <div ref={voiceRef} className={`transition-opacity duration-500 ${generatedText ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden invisible'}`}><Card><CardHeader><CardTitle icon="🎙️">3. Voice Over & Skrip</CardTitle><button onClick={handleStartOver} className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"><RotateCcwIcon className="h-4 w-4" /><span>Mulai Ulang</span></button></CardHeader><CardContent><div className="grid md:grid-cols-2 gap-8 items-start"><div className="space-y-4"><Textarea rows={4} value={sourceText} onChange={(e) => updateState({ sourceText: e.target.value })} placeholder="Teks sumber untuk suara..." /><Select value={voiceStyle} onChange={(e) => updateState({ voiceStyle: e.target.value })}><option>Wanita Natural 🇮🇩</option><option>Pria Formal 🇮🇩</option><option>Wanita Ceria 🇮🇩</option></Select><Button onClick={handleGenerateScripts} disabled={generatingStatus.active || !sourceText || countdown > 0 || credits < 2}>{countdown > 0 ? `Tunggu ${countdown}s` : 'Generate Voice (-2 Kredit)'}</Button></div>{generatedScripts && <div className="space-y-4 bg-gray-900/50 p-4 rounded-lg"><div><Label>Hasil Suara AI</Label>{generatedScripts.audioUrl && <audio controls src={generatedScripts.audioUrl} className="w-full"></audio>}</div><div><Label className="flex justify-between items-center"><span>Prompt Video (Image-to-Video)</span><button onClick={() => handleCopyText(generatedScripts.videoPrompt, 'prompt')} className="text-xs text-gray-400 hover:text-white flex items-center gap-1">{copiedText === 'prompt' ? <CheckIcon className="h-4 w-4 text-green-500"/> : <CopyIcon className="h-4 w-4"/>} Salin</button></Label><p className="font-mono text-xs text-gray-400 bg-black/30 p-2 rounded mt-1">{generatedScripts.videoPrompt}</p></div></div>}</div></CardContent></Card></div>
+                     <div ref={voiceRef} className={`transition-opacity duration-500 ${generatedText ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden invisible'}`}><Card><CardHeader><CardTitle icon="🎙️">3. Voice Over & Skrip</CardTitle><button onClick={handleStartOver} className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"><RotateCcwIcon className="h-4 w-4" /><span>Mulai Ulang</span></button></CardHeader><CardContent><div className="grid md:grid-cols-2 gap-8 items-start"><div className="space-y-4"><Textarea rows={4} value={sourceText} onChange={(e) => updateState({ sourceText: e.target.value })} placeholder="Teks sumber untuk suara..." /><Select value={voiceStyle} onChange={(e) => updateState({ voiceStyle: e.target.value })}><option>Wanita Natural 🇮🇩</option><option>Pria Formal 🇮🇩</option><option>Wanita Ceria 🇮🇩</option></Select><Button onClick={handleGenerateScripts} disabled={generatingStatus.active || !sourceText || countdown > 0 || credits < 2}>{countdown > 0 ? `Tunggu ${countdown}s` : 'Generate Voice (-2 Kredit)'}</Button>{generatingStatus.active && generatingStatus.type === 'scripts' && (<ProgressBar progress={generatingStatus.progress} status={generatingStatus.status} />)}</div>{generatedScripts && <div className="space-y-4 bg-gray-900/50 p-4 rounded-lg"><div><Label>Hasil Suara AI</Label>{generatedScripts.audioUrl && <audio controls src={generatedScripts.audioUrl} className="w-full"></audio>}</div><div><Label className="flex justify-between items-center"><span>Prompt Video (Image-to-Video)</span><button onClick={() => handleCopyText(generatedScripts.videoPrompt, 'prompt')} className="text-xs text-gray-400 hover:text-white flex items-center gap-1">{copiedText === 'prompt' ? <CheckIcon className="h-4 w-4 text-green-500"/> : <CopyIcon className="h-4 w-4"/>} Salin</button></Label><p className="font-mono text-xs text-gray-400 bg-black/30 p-2 rounded mt-1">{generatedScripts.videoPrompt}</p></div></div>}</div></CardContent></Card></div>
 
                     <div ref={downloadRef} className={`transition-opacity duration-500 ${generatedScripts ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden invisible'}`}><Card><CardHeader><CardTitle icon={<PackageCheckIcon className="h-8 w-8 text-green-400" />} className="justify-center">4. Paket Konten Siap</CardTitle><button onClick={handleStartOver} className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"><RotateCcwIcon className="h-4 w-4" /><span>Mulai Ulang</span></button></CardHeader><CardContent className="text-center"><p className="text-gray-400 mt-2 mb-6">Unduh semua aset dalam satu file ZIP.</p><div className="max-w-md mx-auto bg-gray-900/80 p-6 rounded-2xl"><div className="grid grid-cols-2 gap-4 text-left"><div className="font-semibold text-gray-300">Foto Produk AI:</div><div className="text-green-400">{generatedImages.length} file</div><div className="font-semibold text-gray-300">Teks Konten:</div><div className="text-green-400">1 file</div><div className="font-semibold text-gray-300">Skrip & Suara AI:</div><div className="text-green-400">2 file</div><div className="col-span-2 my-2 border-t border-gray-700"></div><div className="font-semibold text-gray-300">Ukuran Total:</div><div>{zipSize || 'Menghitung...'}</div></div></div><div className="mt-8 max-w-sm mx-auto"><Button onClick={handleDownloadZip} disabled={isDownloading}>{isDownloading ? <LoaderCircleIcon className="animate-spin h-5 w-5 mr-2" /> : <DownloadIcon className="h-5 w-5 mr-2" />}{isDownloading ? 'Menyiapkan file...' : `Download Semua File (.zip)`}</Button></div></CardContent></Card></div>
                 </main>
