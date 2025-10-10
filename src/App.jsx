@@ -79,14 +79,14 @@ const formatBytes = (bytes, decimals = 2) => {
 };
 
 // === ICONS (Inline SVG) ===
-const UploadCloudIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>;
-const PackageCheckIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 16h2a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/><path d="M20 6 9 17l-5-5"/></svg>;
-const DownloadIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>;
-const LoaderCircleIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>;
-const AlertTriangleIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>;
-const CopyIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>;
-const CheckIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
-const RotateCcwIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>;
+const UploadCloudIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>;
+const PackageCheckIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 16h2a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/><path d="M20 6 9 17l-5-5"/></svg>;
+const DownloadIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>;
+const LoaderCircleIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>;
+const AlertTriangleIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>;
+const CopyIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>;
+const CheckIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
+const RotateCcwIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>;
 
 
 // === UI COMPONENTS ===
@@ -102,11 +102,10 @@ const Select = ({ children, ...props }) => <select {...props} className={`mt-1 b
 const Checkbox = ({ id, label, checked, onChange }) => <div className="flex items-center"><input id={id} type="checkbox" checked={checked} onChange={onChange} className="h-4 w-4 rounded border-gray-500 bg-gray-700 text-blue-600 focus:ring-blue-600" /><label htmlFor={id} className="ml-3 block text-sm font-medium text-gray-300">{label}</label></div>;
 const ErrorMessage = ({ children }) => <div className="my-4 flex items-center gap-2 text-sm text-red-400 bg-red-900/50 p-3 rounded-lg"><AlertTriangleIcon className="h-5 w-5 flex-shrink-0" />{children}</div>;
 
-// === NEW: Generating Modal Component ===
 const GeneratingModal = ({ show, title, progress, status }) => {
     if (!show) return null;
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 animate-fade-in">
             <div className="bg-gray-800 border border-gray-700 rounded-2xl p-8 w-full max-w-md text-center">
                 <LoaderCircleIcon className="mx-auto h-12 w-12 text-blue-400 animate-spin" />
                 <h3 className="mt-4 text-2xl font-semibold text-white">{title}</h3>
@@ -115,7 +114,7 @@ const GeneratingModal = ({ show, title, progress, status }) => {
                     <div className="w-full bg-gray-700 rounded-full h-2.5">
                         <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${progress}%`, transition: 'width 0.5s ease-in-out' }}></div>
                     </div>
-                    <p className="mt-2 text-sm text-gray-500">{progress}% complete</p>
+                    <p className="mt-2 text-sm text-gray-500">{Math.round(progress)}% complete</p>
                     <p className="mt-1 text-sm text-gray-400 font-semibold">{status}</p>
                 </div>
             </div>
@@ -123,32 +122,16 @@ const GeneratingModal = ({ show, title, progress, status }) => {
     );
 };
 
-// === Photo Theme Data ===
 const photoThemes = [ { name: 'Studio Minimalis', emoji: '⚪' }, { name: 'Cafe Estetik', emoji: '☕' }, { name: 'Outdoor Ceria', emoji: '🌳' }, { name: 'Urban Street', emoji: '🏙️' }];
 const COOLDOWN_SECONDS = 30;
 
 const initialState = {
-    apiError: null,
-    productName: '',
-    productType: 'Kaos',
-    uploadType: 'design', 
-    designSize: 'medium', 
-    productImage: null,
-    productImageUrl: '',
-    useReferenceFace: false,
-    referenceFaceImage: null,
-    referenceFaceImageUrl: '',
-    selectedTheme: photoThemes[0].name,
-    generatedImages: [],
-    productDescription: '',
-    generatedText: null,
-    sourceText: '',
-    voiceStyle: 'Wanita Natural 🇮🇩',
-    generatedScripts: null,
-    isDownloading: false,
-    zipSize: null,
-    credits: 20,
-    countdown: 0,
+    apiError: null, productName: '', productType: 'Kaos', uploadType: 'design', 
+    designSize: 'medium', productImage: null, productImageUrl: '', useReferenceFace: false,
+    referenceFaceImage: null, referenceFaceImageUrl: '', selectedTheme: photoThemes[0].name,
+    generatedImages: [], productDescription: '', generatedText: null, sourceText: '',
+    voiceStyle: 'Wanita Natural 🇮🇩', generatedScripts: null, isDownloading: false,
+    zipSize: null, credits: 20, countdown: 0, 
     generatingStatus: { active: false, title: '', progress: 0, status: '' },
 };
 
@@ -166,9 +149,10 @@ export default function App() {
     const updateState = (newState) => setState(prevState => ({ ...prevState, ...newState }));
 
     useEffect(() => {
-        if (countdown <= 0) return;
-        const timer = setInterval(() => { updateState({ countdown: Math.max(0, state.countdown - 1) }); }, 1000);
-        return () => clearInterval(timer);
+        if (countdown > 0) {
+            const timer = setInterval(() => updateState({ countdown: Math.max(0, state.countdown - 1) }), 1000);
+            return () => clearInterval(timer);
+        }
     }, [countdown, state.countdown]);
 
     useEffect(() => { generatedImages.length > 0 && textRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [generatedImages]);
@@ -229,7 +213,7 @@ export default function App() {
     const handleGenerateImages = async () => {
         const cost = 4;
         if (!canGenerate(cost)) return;
-        updateState({ generatingStatus: { active: true, title: 'Generating Content...', progress: 0, status: 'Preparing prompts...' }, apiError: null, generatedImages: [] });
+        updateState({ generatingStatus: { active: true, title: 'Generating Images...', progress: 0, status: 'Preparing prompts...' }, apiError: null, generatedImages: [] });
         try {
             const faceInstruction = useReferenceFace ? `The model's face must closely resemble the person in the reference face photo.` : `The model is a stylish photogenic Indonesian person.`;
             let themeInstruction = '';
@@ -244,14 +228,13 @@ export default function App() {
                 : `The model is wearing the exact same ${productType} as seen in the uploaded product photo.`;
             
             const prompts = [`Medium shot.`, `Full body shot.`, `Candid, angled shot.`, `Waist-up close-up shot.`].map(pose => `${pose} ${baseInstruction} ${faceInstruction} ${themeInstruction} A high-quality, hyperrealistic fashion photograph, shot on a 50mm lens, high detail, 8K resolution. 9:16 aspect ratio.`);
-
             const productImageBase64 = await toBase64(productImage);
             const faceImageBase64 = useReferenceFace ? await toBase64(referenceFaceImage) : null;
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent`;
 
             let imageUrls = [];
             for (let i = 0; i < prompts.length; i++) {
-                updateState({ generatingStatus: { ...state.generatingStatus, progress: (i / prompts.length) * 100, status: `Processing image ${i + 1} of ${prompts.length}...` } });
+                updateState(p => ({ ...p, generatingStatus: { ...p.generatingStatus, progress: (i / prompts.length) * 100, status: `Processing image ${i + 1} of ${prompts.length}...` } }));
                 const parts = [{ text: prompts[i] }, { inlineData: { mimeType: productImage.type, data: productImageBase64 } }];
                 if (useReferenceFace && faceImageBase64) { parts.push({ inlineData: { mimeType: referenceFaceImage.type, data: faceImageBase64 } }); }
                 const payload = { generationConfig: { responseModalities: ['IMAGE'], imageConfig: { aspectRatio: "9:16" } }, contents: [{ parts }] };
@@ -263,8 +246,8 @@ export default function App() {
                 imageUrls.push(`data:image/png;base64,${imagePart.inlineData.data}`);
             }
 
+            updateState(p => ({ ...p, generatingStatus: { ...p.generatingStatus, progress: 100, status: 'Finalizing...' }}));
             updateState({ 
-                generatingStatus: { active: true, progress: 100, status: 'Finalizing...' },
                 generatedImages: imageUrls.map(url => ({ url })),
                 productDescription: `A high-quality ${productType} named "${productName}" with an exclusive design, perfect for a ${selectedTheme} style. Made from comfortable, premium materials.`,
                 credits: state.credits - cost,
@@ -277,8 +260,60 @@ export default function App() {
         }
     };
     
-    const handleGenerateText = async () => { /* ... (fungsi tetap sama, hanya tambahkan logic modal) ... */ };
-    const handleGenerateScripts = async () => { /* ... (fungsi tetap sama, hanya tambahkan logic modal) ... */ };
+    const handleGenerateText = async () => {
+        if (!canGenerate()) return;
+        updateState({ generatingStatus: { active: true, title: 'Generating Text...', progress: 0, status: 'Initializing...' }, apiError: null });
+        try {
+            updateState(p => ({...p, generatingStatus: {...p.generatingStatus, progress: 30, status: 'Crafting content...'}}));
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`;
+            const schema = { type: "OBJECT", properties: { hook: { type: "STRING" }, caption: { type: "STRING" }, cta: { type: "STRING" } }, required: ["hook", "caption", "cta"] };
+            const systemPrompt = `You are an expert social media marketer for TikTok affiliate content in Indonesia. Your tone is casual, persuasive, and uses trendy Indonesian slang. Generate content based on the user's product description. The output must be in JSON format.`;
+            const userPrompt = `Product description: "${productDescription || productName}". Generate a hook, a TikTok caption, and a strong call-to-action (CTA).`;
+            const payload = { contents: [{ parts: [{ text: userPrompt }] }], systemInstruction: { parts: [{ text: systemPrompt }] }, generationConfig: { responseMimeType: "application/json", responseSchema: schema } };
+            const result = await callGeminiApi(apiUrl, payload);
+            updateState(p => ({...p, generatingStatus: {...p.generatingStatus, progress: 80, status: 'Parsing response...'}}));
+            const data = JSON.parse(result.candidates[0].content.parts[0].text);
+            updateState({ generatedText: data, sourceText: data.caption || '', credits: state.credits - 1, countdown: COOLDOWN_SECONDS });
+        } catch (error) {
+            updateState({ apiError: `Gagal membuat teks: ${error.message}` });
+        } finally {
+            updateState(p => ({...p, generatingStatus: {...p.generatingStatus, progress: 100, status: 'Done!'}}));
+            setTimeout(() => updateState({ generatingStatus: { active: false, title: '', progress: 0, status: '' } }), 500);
+        }
+    };
+
+    const handleGenerateScripts = async () => {
+        if (!canGenerate(2)) return;
+        updateState({ generatingStatus: { active: true, title: 'Generating Scripts & Voice...', progress: 0, status: 'Writing scripts...' }, apiError: null });
+        try {
+            const textApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`;
+            const scriptSchema = { type: "OBJECT", properties: { voiceScript: { type: "STRING" }, videoPrompt: { type: "STRING" }}, required: ["voiceScript", "videoPrompt"] };
+            const scriptSystemPrompt = `You are a creative director for AI-generated TikTok ads. Your task is to create a prompt for an **image-to-video model**. The video prompt must be in **English**. It **must start with the phrase "Using one of the generated photos as the primary reference image,"**. Then, describe a short, 5-10 second video scene based on the provided product info, ad copy, and photo theme. The description should focus on **subtle movements** suitable for animating a still image, like a slight smile, a head turn, hair moving in a breeze, or background elements animating (e.g., coffee steam, city lights). Mention quick cuts and energetic transitions suitable for TikTok. The final output must be a JSON object containing this English video prompt and a short voice-over script in **Indonesian**.`;
+            const scriptUserPrompt = `Product: ${productName} (${productType}). Ad copy: "${sourceText}". Photo Theme: "${selectedTheme}".`;
+            const scriptPayload = { contents: [{ parts: [{ text: scriptUserPrompt }] }], systemInstruction: { parts: [{ text: scriptSystemPrompt }] }, generationConfig: { responseMimeType: "application/json", responseSchema: scriptSchema } };
+            const scriptResult = await callGeminiApi(textApiUrl, scriptPayload);
+            const scriptsData = JSON.parse(scriptResult.candidates[0].content.parts[0].text);
+
+            updateState(p => ({...p, generatingStatus: {...p.generatingStatus, progress: 50, status: 'Generating voice-over...'}}));
+            
+            const ttsApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent`;
+            const voiceMap = { 'Wanita Natural 🇮🇩': { voiceName: 'Kore', promptDesc: 'cheerful natural' }, 'Pria Formal 🇮🇩': { voiceName: 'Charon', promptDesc: 'formal informative' }, 'Wanita Ceria 🇮🇩': { voiceName: 'Puck', promptDesc: 'energetic excited' } };
+            const selectedVoice = voiceMap[voiceStyle];
+            const ttsPayload = { contents: [{ parts: [{ text: `Say in a ${selectedVoice.promptDesc} Indonesian female voice: ${scriptsData.voiceScript}` }] }], generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: selectedVoice.voiceName } } } }, model: "gemini-2.5-flash-preview-tts" };
+            const ttsResult = await callGeminiApi(ttsApiUrl, ttsPayload);
+            const audioPart = ttsResult.candidates[0].content.parts[0];
+            const sampleRate = parseInt(audioPart.inlineData.mimeType.match(/rate=(\d+)/)[1], 10);
+            const pcmBuffer = base64ToArrayBuffer(audioPart.inlineData.data);
+            const wavBlob = pcmToWav(pcmBuffer, sampleRate);
+            updateState({ generatedScripts: { ...scriptsData, audioUrl: URL.createObjectURL(wavBlob), audioWavBlob: wavBlob }, credits: state.credits - 2, countdown: COOLDOWN_SECONDS });
+        } catch (error) {
+            updateState({ apiError: `Gagal membuat suara: ${error.message}` });
+        } finally {
+            updateState(p => ({...p, generatingStatus: {...p.generatingStatus, progress: 100, status: 'Done!'}}));
+            setTimeout(() => updateState({ generatingStatus: { active: false, title: '', progress: 0, status: '' } }), 500);
+        }
+    };
+    
     const handleDownloadZip = async () => { /* ... (fungsi tetap sama) ... */ };
 
     const isGenerateButtonDisabled = generatingStatus.active || !productImage || !productName || (useReferenceFace && !referenceFaceImage) || countdown > 0 || credits < 4;
@@ -292,7 +327,9 @@ export default function App() {
                 <header className="text-center mb-10">
                    <div className="flex justify-between items-center mb-4 relative">
                         <div></div>
-                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Cosmiclab Studio</h1>
+                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                            Cosmiclab Studio
+                        </h1>
                         <div className="text-right text-sm">
                             <div className="font-semibold text-gray-300">Sisa Kredit: <span className="text-green-400">{credits}</span></div>
                             {countdown > 0 && <div className="text-yellow-400">Cooldown: {countdown}s</div>}
@@ -334,7 +371,7 @@ export default function App() {
                                     <div className="grid grid-cols-2 gap-3 mb-6">
                                         {photoThemes.map(theme => <button key={theme.name} onClick={() => updateState({ selectedTheme: theme.name })} className={`p-3 rounded-lg text-sm transition-all border-2 ${selectedTheme === theme.name ? 'bg-blue-600 border-blue-500' : 'bg-gray-700 hover:bg-gray-600 border-gray-600'}`}>{theme.emoji} {theme.name}</button>)}
                                     </div>
-                                    <Button onClick={handleGenerateImages} disabled={isGenerateButtonDisabled}>{generatingStatus.active ? <><LoaderCircleIcon className="animate-spin h-5 w-5" /> Memproses...</> : countdown > 0 ? `Tunggu ${countdown}s` : 'Generate 4 Foto (-4 Kredit)'}</Button>
+                                    <Button onClick={handleGenerateImages} disabled={isGenerateButtonDisabled}>{countdown > 0 ? `Tunggu ${countdown}s` : 'Generate 4 Foto (-4 Kredit)'}</Button>
                                 </div>
                             </div>
                              <div className={`transition-opacity duration-500 ${generatedImages.length > 0 ? 'opacity-100 mt-8' : 'opacity-0 h-0 overflow-hidden'}`}>
@@ -346,9 +383,9 @@ export default function App() {
                         </CardContent>
                     </Card>
 
-                    <div ref={textRef} className={`transition-opacity duration-500 ${generatedImages.length > 0 ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden invisible'}`}><Card><CardHeader><CardTitle icon="📝">2. Teks & Caption</CardTitle><button onClick={handleStartOver} className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"><RotateCcwIcon className="h-4 w-4" /><span>Mulai Ulang</span></button></CardHeader><CardContent><div className="grid md:grid-cols-2 gap-8 items-start"><div className="space-y-4"><Textarea rows={4} value={productDescription} onChange={(e) => updateState({ productDescription: e.target.value })} placeholder="Jelaskan keunggulan produk di sini..." /><Button onClick={handleGenerateText} disabled={generatingStatus.active || countdown > 0 || credits < 1}>{generatingStatus.active ? 'Memproses...' : countdown > 0 ? `Tunggu ${countdown}s` : 'Generate Teks (-1 Kredit)'}</Button></div>{generatedText && <div className="space-y-4 text-sm bg-gray-900/50 p-4 rounded-lg"><div className="flex justify-between items-start"><div className="flex-1 pr-2"><strong className="text-blue-400 block mb-1">Hook:</strong><p>{generatedText.hook}</p></div><button onClick={() => handleCopyText(generatedText.hook, 'Hook')} className="p-1.5 text-gray-400 hover:text-white">{copiedText === 'Hook' ? <CheckIcon className="h-4 w-4 text-green-400" /> : <CopyIcon className="h-4 w-4" />}</button></div><div className="flex justify-between items-start"><div className="flex-1 pr-2"><strong className="text-blue-400 block mb-1">Caption:</strong><p>{generatedText.caption}</p></div><button onClick={() => handleCopyText(generatedText.caption, 'Caption')} className="p-1.5 text-gray-400 hover:text-white">{copiedText === 'Caption' ? <CheckIcon className="h-4 w-4 text-green-400" /> : <CopyIcon className="h-4 w-4" />}</button></div><div className="flex justify-between items-start"><div className="flex-1 pr-2"><strong className="text-blue-400 block mb-1">CTA:</strong><p>{generatedText.cta}</p></div><button onClick={() => handleCopyText(generatedText.cta, 'CTA')} className="p-1.5 text-gray-400 hover:text-white">{copiedText === 'CTA' ? <CheckIcon className="h-4 w-4 text-green-400" /> : <CopyIcon className="h-4 w-4" />}</button></div></div>}</div></CardContent></Card></div>
+                    <div ref={textRef} className={`transition-opacity duration-500 ${generatedImages.length > 0 ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden invisible'}`}><Card><CardHeader><CardTitle icon="📝">2. Teks & Caption</CardTitle><button onClick={handleStartOver} className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"><RotateCcwIcon className="h-4 w-4" /><span>Mulai Ulang</span></button></CardHeader><CardContent><div className="grid md:grid-cols-2 gap-8 items-start"><div className="space-y-4"><Textarea rows={4} value={productDescription} onChange={(e) => updateState({ productDescription: e.target.value })} placeholder="Jelaskan keunggulan produk di sini..." /><Button onClick={handleGenerateText} disabled={generatingStatus.active || countdown > 0 || credits < 1}>{countdown > 0 ? `Tunggu ${countdown}s` : 'Generate Teks (-1 Kredit)'}</Button></div>{generatedText && <div className="space-y-4 text-sm bg-gray-900/50 p-4 rounded-lg"><div className="flex justify-between items-start"><div className="flex-1 pr-2"><strong className="text-blue-400 block mb-1">Hook:</strong><p>{generatedText.hook}</p></div><button onClick={() => handleCopyText(generatedText.hook, 'Hook')} className="p-1.5 text-gray-400 hover:text-white">{copiedText === 'Hook' ? <CheckIcon className="h-4 w-4 text-green-400" /> : <CopyIcon className="h-4 w-4" />}</button></div><div className="flex justify-between items-start"><div className="flex-1 pr-2"><strong className="text-blue-400 block mb-1">Caption:</strong><p>{generatedText.caption}</p></div><button onClick={() => handleCopyText(generatedText.caption, 'Caption')} className="p-1.5 text-gray-400 hover:text-white">{copiedText === 'Caption' ? <CheckIcon className="h-4 w-4 text-green-400" /> : <CopyIcon className="h-4 w-4" />}</button></div><div className="flex justify-between items-start"><div className="flex-1 pr-2"><strong className="text-blue-400 block mb-1">CTA:</strong><p>{generatedText.cta}</p></div><button onClick={() => handleCopyText(generatedText.cta, 'CTA')} className="p-1.5 text-gray-400 hover:text-white">{copiedText === 'CTA' ? <CheckIcon className="h-4 w-4 text-green-400" /> : <CopyIcon className="h-4 w-4" />}</button></div></div>}</div></CardContent></Card></div>
 
-                     <div ref={voiceRef} className={`transition-opacity duration-500 ${generatedText ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden invisible'}`}><Card><CardHeader><CardTitle icon="🎙️">3. Voice Over & Skrip</CardTitle><button onClick={handleStartOver} className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"><RotateCcwIcon className="h-4 w-4" /><span>Mulai Ulang</span></button></CardHeader><CardContent><div className="grid md:grid-cols-2 gap-8 items-start"><div className="space-y-4"><Textarea rows={4} value={sourceText} onChange={(e) => updateState({ sourceText: e.target.value })} placeholder="Teks sumber untuk suara..." /><Select value={voiceStyle} onChange={(e) => updateState({ voiceStyle: e.target.value })}><option>Wanita Natural 🇮🇩</option><option>Pria Formal 🇮🇩</option><option>Wanita Ceria 🇮🇩</option></Select><Button onClick={handleGenerateScripts} disabled={generatingStatus.active || !sourceText || countdown > 0 || credits < 2}>{generatingStatus.active ? 'Memproses...' : countdown > 0 ? `Tunggu ${countdown}s` : 'Generate Voice (-2 Kredit)'}</Button></div>{generatedScripts && <div className="space-y-4 bg-gray-900/50 p-4 rounded-lg"><div><Label>Hasil Suara AI</Label>{generatedScripts.audioUrl && <audio controls src={generatedScripts.audioUrl} className="w-full"></audio>}</div><div><Label className="flex justify-between items-center"><span>Prompt Video (Image-to-Video)</span><button onClick={() => handleCopyText(generatedScripts.videoPrompt, 'prompt')} className="text-xs text-gray-400 hover:text-white flex items-center gap-1">{copiedText === 'prompt' ? <CheckIcon className="h-4 w-4 text-green-500"/> : <CopyIcon className="h-4 w-4"/>} Salin</button></Label><p className="font-mono text-xs text-gray-400 bg-black/30 p-2 rounded mt-1">{generatedScripts.videoPrompt}</p></div></div>}</div></CardContent></Card></div>
+                     <div ref={voiceRef} className={`transition-opacity duration-500 ${generatedText ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden invisible'}`}><Card><CardHeader><CardTitle icon="🎙️">3. Voice Over & Skrip</CardTitle><button onClick={handleStartOver} className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"><RotateCcwIcon className="h-4 w-4" /><span>Mulai Ulang</span></button></CardHeader><CardContent><div className="grid md:grid-cols-2 gap-8 items-start"><div className="space-y-4"><Textarea rows={4} value={sourceText} onChange={(e) => updateState({ sourceText: e.target.value })} placeholder="Teks sumber untuk suara..." /><Select value={voiceStyle} onChange={(e) => updateState({ voiceStyle: e.target.value })}><option>Wanita Natural 🇮🇩</option><option>Pria Formal 🇮🇩</option><option>Wanita Ceria 🇮🇩</option></Select><Button onClick={handleGenerateScripts} disabled={generatingStatus.active || !sourceText || countdown > 0 || credits < 2}>{countdown > 0 ? `Tunggu ${countdown}s` : 'Generate Voice (-2 Kredit)'}</Button></div>{generatedScripts && <div className="space-y-4 bg-gray-900/50 p-4 rounded-lg"><div><Label>Hasil Suara AI</Label>{generatedScripts.audioUrl && <audio controls src={generatedScripts.audioUrl} className="w-full"></audio>}</div><div><Label className="flex justify-between items-center"><span>Prompt Video (Image-to-Video)</span><button onClick={() => handleCopyText(generatedScripts.videoPrompt, 'prompt')} className="text-xs text-gray-400 hover:text-white flex items-center gap-1">{copiedText === 'prompt' ? <CheckIcon className="h-4 w-4 text-green-500"/> : <CopyIcon className="h-4 w-4"/>} Salin</button></Label><p className="font-mono text-xs text-gray-400 bg-black/30 p-2 rounded mt-1">{generatedScripts.videoPrompt}</p></div></div>}</div></CardContent></Card></div>
 
                     <div ref={downloadRef} className={`transition-opacity duration-500 ${generatedScripts ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden invisible'}`}><Card><CardHeader><CardTitle icon={<PackageCheckIcon className="h-8 w-8 text-green-400" />} className="justify-center">4. Paket Konten Siap</CardTitle><button onClick={handleStartOver} className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"><RotateCcwIcon className="h-4 w-4" /><span>Mulai Ulang</span></button></CardHeader><CardContent className="text-center"><p className="text-gray-400 mt-2 mb-6">Unduh semua aset dalam satu file ZIP.</p><div className="max-w-md mx-auto bg-gray-900/80 p-6 rounded-2xl"><div className="grid grid-cols-2 gap-4 text-left"><div className="font-semibold text-gray-300">Foto Produk AI:</div><div className="text-green-400">{generatedImages.length} file</div><div className="font-semibold text-gray-300">Teks Konten:</div><div className="text-green-400">1 file</div><div className="font-semibold text-gray-300">Skrip & Suara AI:</div><div className="text-green-400">2 file</div><div className="col-span-2 my-2 border-t border-gray-700"></div><div className="font-semibold text-gray-300">Ukuran Total:</div><div>{zipSize || 'Menghitung...'}</div></div></div><div className="mt-8 max-w-sm mx-auto"><Button onClick={handleDownloadZip} disabled={isDownloading}>{isDownloading ? <LoaderCircleIcon className="animate-spin h-5 w-5 mr-2" /> : <DownloadIcon className="h-5 w-5 mr-2" />}{isDownloading ? 'Menyiapkan file...' : `Download Semua File (.zip)`}</Button></div></CardContent></Card></div>
                 </main>
