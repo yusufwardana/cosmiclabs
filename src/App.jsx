@@ -82,12 +82,11 @@ const formatBytes = (bytes, decimals = 2) => {
 const UploadCloudIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>;
 const PackageCheckIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 16h2a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/><path d="M20 6 9 17l-5-5"/></svg>;
 const DownloadIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>;
-const LoaderCircleIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>;
+const LoaderCircleIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>;
 const AlertTriangleIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>;
 const CopyIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>;
 const CheckIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
 const RotateCcwIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>;
-const SparklesIcon = ({ className }) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.9 3.8-3.8 1.9 3.8 1.9L12 14.4l1.9-3.8 3.8-1.9-3.8-1.9z"/><path d="M3 12 4.9 8.2 8.7 6.3 4.9 4.4 3 0.6 1.1 4.4 0 6.3l3.8 1.9L3 12z"/><path d="M21 12l-1.9 3.8-3.8 1.9 3.8 1.9L21 23.4l1.9-3.8 3.8-1.9-3.8-1.9z"/></svg>;
 
 
 // === UI COMPONENTS ===
@@ -122,7 +121,6 @@ const initialState = {
     apiError: null, productName: '', productType: 'Kaos', uploadType: 'design', 
     designSize: 'medium', productImage: null, productImageUrl: '', useReferenceFace: false,
     referenceFaceImage: null, referenceFaceImageUrl: '', selectedTheme: photoThemes[0].name,
-    negativePrompt: '',
     generatedImages: [], productDescription: '', generatedText: null, sourceText: '',
     voiceStyle: 'Wanita Natural 🇮🇩', generatedScripts: null, isDownloading: false,
     zipSize: null, credits: 20, countdown: 0, 
@@ -133,7 +131,7 @@ const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
 
 export default function App() {
     const [state, setState] = useState(initialState);
-    const { apiError, productName, productType, uploadType, designSize, productImage, productImageUrl, useReferenceFace, referenceFaceImage, referenceFaceImageUrl, selectedTheme, negativePrompt, generatedImages, productDescription, generatedText, sourceText, voiceStyle, generatedScripts, isDownloading, zipSize, credits, countdown, generatingStatus } = state;
+    const { apiError, productName, productType, uploadType, designSize, productImage, productImageUrl, useReferenceFace, referenceFaceImage, referenceFaceImageUrl, selectedTheme, generatedImages, productDescription, generatedText, sourceText, voiceStyle, generatedScripts, isDownloading, zipSize, credits, countdown, generatingStatus } = state;
     
     const [copiedText, setCopiedText] = useState(null);
     const textRef = useRef(null);
@@ -145,6 +143,7 @@ export default function App() {
     useEffect(() => {
         if (countdown > 0) {
             const timer = setInterval(() => {
+                // Use functional update to get the latest countdown value
                 setState(prevState => ({ ...prevState, countdown: Math.max(0, prevState.countdown - 1) }));
             }, 1000);
             return () => clearInterval(timer);
@@ -190,9 +189,9 @@ export default function App() {
     const handleStartOver = () => { setState(initialState); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
     const canGenerate = (cost = 1) => {
-        if (!apiKey) { updateState({ apiError: "Gagal: API Key tidak ditemukan. Pastikan VITE_GEMINI_API_KEY sudah diatur di Vercel." }); return false; }
-        if (credits < cost) { updateState({ apiError: `Gagal: Kredit tidak cukup. Dibutuhkan ${cost}, Anda memiliki ${credits}.` }); return false; }
-        if (countdown > 0) { updateState({ apiError: `Gagal: Harap tunggu ${countdown} detik sebelum mencoba lagi.` }); return false; }
+        if (!apiKey) { updateState({ apiError: "API Key belum diatur. Harap atur di Vercel." }); return false; }
+        if (credits < cost) { updateState({ apiError: "Maaf, kredit Anda tidak mencukupi." }); return false; }
+        if (countdown > 0) { updateState({ apiError: `Harap tunggu ${countdown} detik sebelum mencoba lagi.` }); return false; }
         return true;
     };
 
@@ -206,45 +205,33 @@ export default function App() {
         return await response.json();
     };
     
-    const handleGenerateImages = async (variationSource = null) => {
+    const handleGenerateImages = async () => {
         const cost = 4;
         if (!canGenerate(cost)) return;
         updateState({ generatingStatus: { active: true, type: 'images', progress: 0, status: 'Preparing prompts...' }, apiError: null, generatedImages: [] });
         try {
-            let prompts;
-            let referenceImageBase64;
-            const numVariations = 4;
-
-            if (variationSource) {
-                prompts = Array(numVariations).fill(`Create a new photorealistic variation of the provided reference image. Maintain the same subject, clothing, style, and background theme, but introduce subtle changes in the model's pose, expression, or camera angle. A high-quality fashion photograph, 9:16 aspect ratio.`);
-                referenceImageBase64 = variationSource.url.split(',')[1];
-            } else {
-                const faceInstruction = useReferenceFace ? `The model's face must closely resemble the person in the reference face photo.` : `The model is a stylish photogenic Indonesian person.`;
-                let themeInstruction = '';
-                switch (selectedTheme) {
-                    case 'Studio Minimalis': themeInstruction = 'The photo is a professional shot in a studio with a clean, minimalist light-gray background and soft, even lighting.'; break;
-                    case 'Cafe Estetik': themeInstruction = 'The photo is taken in a modern, stylish cafe with natural window light and warm, cozy tones. Cinematic.'; break;
-                    case 'Outdoor Ceria': themeInstruction = 'The photo is taken outdoors in a bright, sunny park or garden. The mood is happy and cheerful. Golden hour lighting.'; break;
-                    case 'Urban Street': themeInstruction = 'This is a cool street-style photograph taken in a modern urban setting, like against a concrete wall or on a city street. Edgy vibe.'; break;
-                }
-                let baseInstruction = (uploadType === 'design') 
-                    ? `The model is wearing a ${productType}. ${designSize === 'full' ? `The graphic design from the uploaded image is applied as an all-over print covering the entire front of the ${productType}.` : designSize === 'medium' ? `The graphic design from the uploaded image is placed prominently and realistically in the center of the chest of the ${productType}.` : `A small version of the graphic design from the uploaded image is placed on the left chest area of the ${productType}, like a pocket logo.`} The design must be clearly visible and realistically applied.`
-                    : `The model is wearing the exact same ${productType} as seen in the uploaded product photo.`;
-                
-                const negativeInstruction = negativePrompt ? ` IMPORTANT: Avoid the following elements: ${negativePrompt}.` : '';
-                
-                prompts = [`Medium shot.`, `Full body shot.`, `Candid, angled shot.`, `Waist-up close-up shot.`].map(pose => `${pose} ${baseInstruction} ${faceInstruction} ${themeInstruction}${negativeInstruction} A high-quality, hyperrealistic fashion photograph, shot on a 50mm lens, high detail, 8K resolution. 9:16 aspect ratio.`);
-                referenceImageBase64 = await toBase64(productImage);
+            const faceInstruction = useReferenceFace ? `The model's face must closely resemble the person in the reference face photo.` : `The model is a stylish photogenic Indonesian person.`;
+            let themeInstruction = '';
+            switch (selectedTheme) {
+                case 'Studio Minimalis': themeInstruction = 'The photo is a professional shot in a studio with a clean, minimalist light-gray background and soft, even lighting.'; break;
+                case 'Cafe Estetik': themeInstruction = 'The photo is taken in a modern, stylish cafe with natural window light and warm, cozy tones. Cinematic.'; break;
+                case 'Outdoor Ceria': themeInstruction = 'The photo is taken outdoors in a bright, sunny park or garden. The mood is happy and cheerful. Golden hour lighting.'; break;
+                case 'Urban Street': themeInstruction = 'This is a cool street-style photograph taken in a modern urban setting, like against a concrete wall or on a city street. Edgy vibe.'; break;
             }
-
-            const faceImageBase64 = useReferenceFace && !variationSource ? await toBase64(referenceFaceImage) : null;
+            let baseInstruction = (uploadType === 'design') 
+                ? `The model is wearing a ${productType}. ${designSize === 'full' ? `The graphic design from the uploaded image is applied as an all-over print covering the entire front of the ${productType}.` : designSize === 'medium' ? `The graphic design from the uploaded image is placed prominently and realistically in the center of the chest of the ${productType}.` : `A small version of the graphic design from the uploaded image is placed on the left chest area of the ${productType}, like a pocket logo.`} The design must be clearly visible and realistically applied.`
+                : `The model is wearing the exact same ${productType} as seen in the uploaded product photo.`;
+            
+            const prompts = [`Medium shot.`, `Full body shot.`, `Candid, angled shot.`, `Waist-up close-up shot.`].map(pose => `${pose} ${baseInstruction} ${faceInstruction} ${themeInstruction} A high-quality, hyperrealistic fashion photograph, shot on a 50mm lens, high detail, 8K resolution. 9:16 aspect ratio.`);
+            const productImageBase64 = await toBase64(productImage);
+            const faceImageBase64 = useReferenceFace ? await toBase64(referenceFaceImage) : null;
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent`;
 
             let imageUrls = [];
             for (let i = 0; i < prompts.length; i++) {
                 updateState(prevState => ({ ...prevState, generatingStatus: { ...prevState.generatingStatus, progress: (i / prompts.length) * 100, status: `Processing image ${i + 1} of ${prompts.length}...` }}));
-                const parts = [{ text: prompts[i] }, { inlineData: { mimeType: 'image/png', data: referenceImageBase64 } }];
-                if (faceImageBase64) { parts.push({ inlineData: { mimeType: referenceFaceImage.type, data: faceImageBase64 } }); }
+                const parts = [{ text: prompts[i] }, { inlineData: { mimeType: productImage.type, data: productImageBase64 } }];
+                if (useReferenceFace && faceImageBase64) { parts.push({ inlineData: { mimeType: referenceFaceImage.type, data: faceImageBase64 } }); }
                 const payload = { generationConfig: { responseModalities: ['IMAGE'], imageConfig: { aspectRatio: "9:16" } }, contents: [{ parts }] };
                 const result = await callGeminiApi(apiUrl, payload);
                 const candidate = result.candidates?.[0];
@@ -264,7 +251,7 @@ export default function App() {
         } catch (error) {
             updateState({ apiError: `${error.message}` });
         } finally {
-            setTimeout(() => updateState({ generatingStatus: { active: false, type: null, progress: 0, status: '' } }), 1000);
+            setTimeout(() => updateState({ generatingStatus: { active: false, type: null, progress: 0, status: '' } }), 500);
         }
     };
     
@@ -373,20 +360,18 @@ export default function App() {
                                     </div>
                                 </div>
                                 <div>
-                                    <Label>Hal yang ingin dihindari (Prompt Negatif)</Label>
-                                    <Textarea value={negativePrompt} onChange={(e) => updateState({ negativePrompt: e.target.value })} placeholder="Contoh: teks, logo, tangan cacat, buram, kartun" rows={2} />
-                                    <h3 className="font-semibold text-lg mb-4 mt-6 text-gray-200">Pilih Tema Latar</h3>
+                                    <h3 className="font-semibold text-lg mb-4 text-gray-200">Pilih Tema Latar</h3>
                                     <div className="grid grid-cols-2 gap-3 mb-6">
                                         {photoThemes.map(theme => <button key={theme.name} onClick={() => updateState({ selectedTheme: theme.name })} className={`p-3 rounded-lg text-sm transition-all border-2 ${selectedTheme === theme.name ? 'bg-blue-600 border-blue-500' : 'bg-gray-700 hover:bg-gray-600 border-gray-600'}`}>{theme.emoji} {theme.name}</button>)}
                                     </div>
-                                    <Button onClick={() => handleGenerateImages(null)} disabled={isGenerateButtonDisabled}>{countdown > 0 ? `Tunggu ${countdown}s` : 'Generate 4 Foto (-4 Kredit)'}</Button>
+                                    <Button onClick={handleGenerateImages} disabled={isGenerateButtonDisabled}>{countdown > 0 ? `Tunggu ${countdown}s` : 'Generate 4 Foto (-4 Kredit)'}</Button>
                                     {generatingStatus.active && generatingStatus.type === 'images' && (<ProgressBar progress={generatingStatus.progress} status={generatingStatus.status} />)}
                                 </div>
                             </div>
                              <div className={`transition-opacity duration-500 ${generatedImages.length > 0 ? 'opacity-100 mt-8' : 'opacity-0 h-0 overflow-hidden'}`}>
                                 <h3 className="font-semibold text-lg mb-4 text-gray-200">Hasil Foto Mockup (9:16)</h3>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    {generatedImages.map((img, i) => <div key={i} className="relative group overflow-hidden rounded-lg"><img src={img.url} alt={`Mockup ${i}`} className="aspect-[9/16] bg-gray-700 object-cover w-full transition-transform duration-300 ease-in-out group-hover:scale-110" /><div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity gap-2"><button onClick={() => window.saveAs(img.url, `mockup-${i+1}.png`)} className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white text-xs px-2 py-1.5 rounded-full"><DownloadIcon className="h-4 w-4" /><span>Unduh</span></button><button onClick={() => handleGenerateImages(img)} disabled={generatingStatus.active || countdown > 0 || credits < 4} className="flex items-center gap-2 bg-purple-600/50 hover:bg-purple-600 text-white text-xs px-2 py-1.5 rounded-full disabled:bg-gray-500/50 disabled:cursor-not-allowed"><SparklesIcon className="h-4 w-4" /><span>Variasi</span></button></div></div>)}
+                                    {generatedImages.map((img, i) => <div key={i} className="relative group overflow-hidden rounded-lg"><img src={img.url} alt={`Mockup ${i}`} className="aspect-[9/16] bg-gray-700 object-cover w-full transition-transform duration-300 ease-in-out group-hover:scale-110" /><div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><button onClick={() => window.saveAs(img.url, `mockup-${i+1}.png`)} className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white text-xs px-3 py-1.5 rounded-full"><DownloadIcon className="h-4 w-4" /><span>Unduh</span></button></div></div>)}
                                 </div>
                             </div>
                         </CardContent>
@@ -413,5 +398,4 @@ export default function App() {
         </div>
     );
 }
-
 
