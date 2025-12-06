@@ -102,6 +102,26 @@ const Select = ({ children, ...props }) => <select {...props} className={`mt-1 b
 const Checkbox = ({ id, label, checked, onChange }) => <div className="flex items-center"><input id={id} type="checkbox" checked={checked} onChange={onChange} className="h-4 w-4 rounded border-gray-500 bg-gray-700 text-blue-600 focus:ring-blue-600" /><label htmlFor={id} className="ml-3 block text-sm font-medium text-gray-300">{label}</label></div>;
 const ErrorMessage = ({ children }) => <div className="my-4 flex items-center gap-2 text-sm text-red-400 bg-red-900/50 p-3 rounded-lg"><AlertTriangleIcon className="h-5 w-5 flex-shrink-0" />{children}</div>;
 
+const ApiKeyInput = ({ onSave }) => {
+    const [key, setKey] = useState('');
+    return (
+        <div className="mb-8 p-4 bg-yellow-900/30 border border-yellow-700 rounded-lg animate-fade-in">
+            <h3 className="text-lg font-semibold text-yellow-500 mb-2">🔑 Setup API Key</h3>
+            <p className="text-gray-300 mb-3 text-sm">Masukkan Google AI Studio (Gemini) API Key Anda untuk menggunakan aplikasi ini.</p>
+            <div className="flex gap-2">
+                <Input
+                    type="password"
+                    placeholder="Tempel API Key di sini (dimulai dengan AIza...)"
+                    value={key}
+                    onChange={(e) => setKey(e.target.value)}
+                />
+                <Button className="w-auto px-6 bg-yellow-600 hover:bg-yellow-500" onClick={() => onSave(key)}>Simpan</Button>
+            </div>
+            <p className="mt-2 text-xs text-gray-500">Key tersimpan di browser Anda secara lokal.</p>
+        </div>
+    );
+};
+
 const ProgressBar = ({ progress, status }) => (
     <div className="mt-4 space-y-2 animate-fade-in">
         <div className="w-full bg-gray-700 rounded-full h-2.5">
@@ -127,11 +147,12 @@ const initialState = {
     generatingStatus: { active: false, type: null, progress: 0, status: '' },
 };
 
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
-
 export default function App() {
-    const [state, setState] = useState(initialState);
-    const { apiError, productName, productType, uploadType, designSize, productImage, productImageUrl, useReferenceFace, referenceFaceImage, referenceFaceImageUrl, selectedTheme, generatedImages, productDescription, generatedText, sourceText, voiceStyle, generatedScripts, isDownloading, zipSize, credits, countdown, generatingStatus } = state;
+    const [state, setState] = useState({
+        ...initialState,
+        apiKey: import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem('gemini_api_key') || ""
+    });
+    const { apiKey, apiError, productName, productType, uploadType, designSize, productImage, productImageUrl, useReferenceFace, referenceFaceImage, referenceFaceImageUrl, selectedTheme, generatedImages, productDescription, generatedText, sourceText, voiceStyle, generatedScripts, isDownloading, zipSize, credits, countdown, generatingStatus } = state;
     
     const [copiedText, setCopiedText] = useState(null);
     const textRef = useRef(null);
@@ -183,10 +204,10 @@ export default function App() {
     };
 
     const handleCopyText = (textToCopy, type) => navigator.clipboard.writeText(textToCopy).then(() => { setCopiedText(type); setTimeout(() => setCopiedText(null), 2000); });
-    const handleStartOver = () => { setState(initialState); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+    const handleStartOver = () => { setState(prev => ({ ...initialState, apiKey: prev.apiKey })); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
     const canGenerate = (cost = 1) => {
-        if (!apiKey) { updateState({ apiError: "API Key belum diatur. Harap atur di Vercel." }); return false; }
+        if (!apiKey) { updateState({ apiError: "API Key belum diatur." }); return false; }
         if (credits < cost) { updateState({ apiError: "Maaf, kredit Anda tidak mencukupi." }); return false; }
         if (countdown > 0) { updateState({ apiError: `Harap tunggu ${countdown} detik sebelum mencoba lagi.` }); return false; }
         return true;
@@ -323,6 +344,17 @@ export default function App() {
                         <div className="text-right text-sm">
                             <div className="font-semibold text-gray-300">Sisa Kredit: <span className="text-green-400">{credits}</span></div>
                             {countdown > 0 && <div className="text-yellow-400">Cooldown: {countdown}s</div>}
+                            {apiKey && (
+                                <button
+                                    onClick={() => {
+                                        updateState({ apiKey: "" });
+                                        localStorage.removeItem('gemini_api_key');
+                                    }}
+                                    className="text-xs text-gray-500 hover:text-red-400 underline mt-1 block w-full text-right"
+                                >
+                                    Reset API Key
+                                </button>
+                            )}
                         </div>
                    </div>
                     <p className="mt-2 text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">Buat seluruh aset konten (gambar, caption, voice over) untuk produk TikTok Affiliate Anda secara otomatis dengan AI.</p>
@@ -330,6 +362,14 @@ export default function App() {
 
                 <main className="space-y-8">
                     {apiError && <ErrorMessage>{apiError}</ErrorMessage>}
+
+                    {!apiKey && (
+                        <ApiKeyInput onSave={(key) => {
+                            updateState({ apiKey: key });
+                            localStorage.setItem('gemini_api_key', key);
+                        }} />
+                    )}
+
                     <Card>
                         <CardHeader>
                             <CardTitle icon="🎨">1. Informasi & Foto Produk</CardTitle>
